@@ -12,6 +12,8 @@ Para rodar esse projeto, você vai precisar adicionar as seguintes variáveis de
 
 `DB_PASSWORD`
 
+`SECRET_KEY`
+
 
 ## Rodando localmente
 
