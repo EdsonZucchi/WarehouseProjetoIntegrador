@@ -3,6 +3,7 @@ package io.github.edsonzuchi.gfig.core.service.impl;
 import io.github.edsonzuchi.gfig.core.exception.UserException;
 import io.github.edsonzuchi.gfig.core.model.dto.LoginDto;
 import io.github.edsonzuchi.gfig.core.model.dto.UserDto;
+import io.github.edsonzuchi.gfig.core.model.dto.UserResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.model.enums.UserRole;
 import io.github.edsonzuchi.gfig.core.service.UserService;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,5 +63,23 @@ public class UserServiceImpl implements UserService {
         }
 
         return this.tokenService.generateToken(user);
+    }
+
+    @Override
+    public List<UserResponse> getUsers() throws Exception {
+        List<User> users = this.userRepository.findAll();
+        List<UserResponse> userResponses = new ArrayList<>();
+
+        for (User user : users) {
+            UserResponse response = new UserResponse(
+                    user.getEmail(),
+                    user.getName(),
+                    user.getBirthday(),
+                    user.getRole().getKey()
+            );
+            userResponses.add(response);
+        }
+
+        return userResponses;
     }
 }
