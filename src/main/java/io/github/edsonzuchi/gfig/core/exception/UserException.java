@@ -5,6 +5,7 @@ public class UserException extends Exception {
     public static UserException userNotFound = new UserException("User not found");
     public static UserException userExists = new UserException("Email already exists");
     public static UserException wrongPassword = new UserException("Wrong password");
+    public static UserException roleNotFound = new UserException("Role not found");
 
     public UserException() {
         super();
