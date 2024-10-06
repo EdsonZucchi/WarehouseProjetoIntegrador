@@ -12,7 +12,8 @@ import java.util.List;
 @Service
 public interface UserService {
 
-    User createUser(UserDto userDto) throws Exception;
+    UserResponse createUser(UserDto userDto) throws Exception;
     String loginUser(LoginDto loginDto) throws Exception;
     List<UserResponse> getUsers() throws Exception;
+    String createAdmin() throws Exception;
 }

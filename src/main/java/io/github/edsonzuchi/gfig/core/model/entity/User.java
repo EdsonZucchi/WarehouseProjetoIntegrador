@@ -21,8 +21,8 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(nullable = false)
     private String password;
     @Column(nullable = false, unique = true)
@@ -30,6 +30,7 @@ public class User {
     private String name;
     private LocalDate birthday;
     private UserRole role;
+    private Boolean isSystem = false;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "update_at")

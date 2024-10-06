@@ -19,8 +19,7 @@ public class UserController {
     @PostMapping("/auth/register")
     public ResponseEntity<Object> register(@RequestBody UserDto userDto) {
         try {
-            User user = userService.createUser(userDto);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(userService.createUser(userDto));
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
@@ -48,4 +47,16 @@ public class UserController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @PostMapping("/admin")
+    public ResponseEntity<Object> admin() {
+        try {
+            return ResponseEntity.ok(userService.createAdmin());
+        }catch (UserException ue) {
+            return ResponseEntity.unprocessableEntity().body(ue.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
 }

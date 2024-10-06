@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     @Override
-    public User createUser(UserDto userDto) throws Exception {
+    public UserResponse createUser(UserDto userDto) throws Exception {
         Optional<User> user = userRepository.findByEmail(userDto.email());
         if (user.isPresent()) {
             throw UserException.userExists;
@@ -46,8 +47,14 @@ public class UserServiceImpl implements UserService {
         newUser.setBirthday(userDto.birthday());
         newUser.setName(userDto.name());
         newUser.setRole(role);
+        this.userRepository.save(newUser);
 
-        return this.userRepository.save(newUser);
+        return new UserResponse(
+                newUser.getEmail(),
+                newUser.getName(),
+                newUser.getBirthday(),
+                newUser.getRole().getKey()
+        );
     }
 
     @Override
@@ -81,5 +88,24 @@ public class UserServiceImpl implements UserService {
         }
 
         return userResponses;
+    }
+
+    @Override
+    public String createAdmin() throws Exception {
+        var user = this.userRepository.findByEmail("admin");
+        if (user.isPresent()) {
+            throw UserException.userAdminExists;
+        }
+
+        User newUser = new User();
+        newUser.setEmail("admin");
+        newUser.setPassword(passwordEncoder.encode("admin"));
+        newUser.setBirthday(LocalDate.now());
+        newUser.setName("admin");
+        newUser.setRole(UserRole.ADMIN);
+        newUser.setIsSystem(true);
+        this.userRepository.save(newUser);
+
+        return "User admin create";
     }
 }
