@@ -5,14 +5,9 @@ import io.github.edsonzuchi.gfig.core.model.dto.LoginDto;
 import io.github.edsonzuchi.gfig.core.model.dto.UserDto;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.service.UserService;
-import io.github.edsonzuchi.gfig.infra.repository.UserRepository;
-import io.github.edsonzuchi.gfig.infra.security.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
