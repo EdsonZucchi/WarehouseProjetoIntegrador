@@ -23,7 +23,7 @@ public class UserController {
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Error processing request");
         }
     }
 
@@ -35,7 +35,7 @@ public class UserController {
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Error processing request");
         }
     }
 
@@ -44,7 +44,7 @@ public class UserController {
         try {
             return ResponseEntity.ok(userService.getUsers());
         }catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Error processing request");
         }
     }
 
@@ -55,7 +55,7 @@ public class UserController {
         }catch (UserException ue) {
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Error processing request");
         }
     }
 
