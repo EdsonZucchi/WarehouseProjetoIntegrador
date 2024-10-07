@@ -1,5 +1,6 @@
 import axios from "axios";
 import { baseURL } from "./baseUrl";
+import { getToken } from "../utils/utils";
 
 export const httpHelper = axios.create({
   withCredentials: true,
@@ -9,3 +10,11 @@ export const httpHelper = axios.create({
     Accept: "application/json",
   },
 });
+
+httpHelper.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  }
+);

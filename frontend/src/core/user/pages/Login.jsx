@@ -3,15 +3,28 @@ import { PasswordField } from "../../../shared/components/PasswordField";
 import { useForm } from "react-hook-form";
 import { userUseCase } from "../usecase/UserUseCase";
 import { EmailField } from "../../../shared/components/EmailField";
+import { setToken } from "../../../shared/utils/utils";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const form = useForm();
 
   const { handleSubmit, setValue } = form;
 
+  const navigate = useNavigate();
+
   const login = (data) => {
     userUseCase.login(data?.email, data?.password).then((response) => {
-      console.log(response)
+      try {
+        if (response == ""){
+          console.log(response)
+        }else{
+          setToken(response)
+          navigate("/users");
+        }
+      }catch (error) {
+        console.log(response)
+      }
     })
   };
 

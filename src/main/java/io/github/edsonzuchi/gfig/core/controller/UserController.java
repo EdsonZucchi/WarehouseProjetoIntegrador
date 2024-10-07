@@ -59,4 +59,9 @@ public class UserController {
         }
     }
 
+    @GetMapping("/valid")
+    public ResponseEntity<Object> valid() {
+        return ResponseEntity.ok("Ok");
+    }
+
 }
