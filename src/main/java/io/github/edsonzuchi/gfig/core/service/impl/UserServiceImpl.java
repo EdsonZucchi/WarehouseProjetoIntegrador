@@ -2,6 +2,7 @@ package io.github.edsonzuchi.gfig.core.service.impl;
 
 import io.github.edsonzuchi.gfig.core.exception.UserException;
 import io.github.edsonzuchi.gfig.core.model.dto.LoginDto;
+import io.github.edsonzuchi.gfig.core.model.dto.RoleResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.UserDto;
 import io.github.edsonzuchi.gfig.core.model.dto.UserResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
@@ -110,5 +111,21 @@ public class UserServiceImpl implements UserService {
         this.userRepository.save(newUser);
 
         return "User admin create";
+    }
+
+    @Override
+    public List<RoleResponse> getRoles() throws Exception {
+        List<UserRole> list = new ArrayList<>();
+        List<RoleResponse> response = new ArrayList<>();
+
+        list.add(UserRole.ADMIN);
+        list.add(UserRole.MANAGER);
+        list.add(UserRole.REQUESTER);
+
+        for (UserRole userRole : list) {
+            response.add(new RoleResponse(userRole.getKey(), userRole.getLabel()));
+        }
+
+        return response;
     }
 }

@@ -3,7 +3,6 @@ package io.github.edsonzuchi.gfig.core.controller;
 import io.github.edsonzuchi.gfig.core.exception.UserException;
 import io.github.edsonzuchi.gfig.core.model.dto.LoginDto;
 import io.github.edsonzuchi.gfig.core.model.dto.UserDto;
-import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +61,15 @@ public class UserController {
     @GetMapping("/valid")
     public ResponseEntity<Object> valid() {
         return ResponseEntity.ok("Ok");
+    }
+
+    @GetMapping("/role")
+    public ResponseEntity<Object> getRoles() {
+        try {
+            return ResponseEntity.ok(userService.getRoles());
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body("Error processing request");
+        }
     }
 
 }

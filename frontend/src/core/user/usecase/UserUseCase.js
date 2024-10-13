@@ -12,6 +12,10 @@ class UserUseCase {
     async getUsers() {
         return userRepository.getUsers()
     }
+
+    async createUser() {
+        return userRepository.createUser();
+    }
 }
 
 export const userUseCase = new UserUseCase();

@@ -1,14 +1,16 @@
 package io.github.edsonzuchi.gfig.core.model.enums;
 
 public enum UserRole {
-    ADMIN("admin"),
-    MANAGER("manager"),
-    REQUESTER("requester");
+    ADMIN("admin", "Administrador"),
+    MANAGER("manager", "Gerente"),
+    REQUESTER("requester", "Requisitor");
 
     private String key;
+    private String label;
 
-    UserRole(String key) {
+    UserRole(String key, String label) {
         this.key = key;
+        this.label = label;
     }
 
     public static UserRole getRoleOfKey(String key) {
@@ -23,5 +25,9 @@ public enum UserRole {
 
     public String getKey() {
         return key;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

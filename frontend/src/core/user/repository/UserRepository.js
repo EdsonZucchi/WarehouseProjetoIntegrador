@@ -46,6 +46,20 @@ class UserRepository {
       return [];
     }
   }
+
+  async createUser() {
+    try { 
+      const response = await httpHelper.post("/auth/register");
+      if (response.status == 200){
+        return response.data;
+      }else{
+        return null;
+      }
+    }catch (error) {
+      console.error(error);
+      return null; 
+    }
+  }
 }
 
 export const userRepository = new UserRepository();

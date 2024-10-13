@@ -6,13 +6,41 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Slide } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { userUseCase } from '../usecase/UserUseCase';
+import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
+import { useForm } from 'react-hook-form';
+import { EmailField } from '../../../shared/components/EmailField';
+import { NameField } from '../../../shared/components/NameField';
+import { PasswordField } from '../../../shared/components/PasswordField';
+import { DateField } from '../../../shared/components/DateField';
+import { SelectField } from '../../../shared/components/SelectField';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export const Users = () => {
 
   const [rows, setRows] = React.useState([]);
+  const [open, setOpen] = React.useState(false);
+
+  const form = useForm();
+
+  const { handleSubmit, setValue } = form;
+
+  const createUser = (data) => {
+    
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  }
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -41,9 +69,121 @@ export const Users = () => {
           sx={{
             width:"100%"
           }}
+          onClick={handleClickOpen}
         >
           Novo usuário
         </Button>
+        <Dialog
+          open={open}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby="alert-dialog-slide-description"
+          fullWidth={true}
+          maxWidth={`sm`}
+        >
+          <DialogTitle>{"Novo usuário"}</DialogTitle>
+          <DialogContent>
+            <Box 
+              component="form"
+              onSubmit={handleSubmit(createUser)}
+              sx={{ display: "flex", 
+                    alignItems:"center",
+                    justifyContent:"center", 
+                    flexDirection: "column", 
+                    gap: 1, 
+                    width:"100%",
+                  }}
+            >
+              <EmailField
+                label="E-mail"
+                name="email"
+                form={form}
+                required="Informe o e-mail"
+                size="small"
+                sx={{
+                  width:"95%"
+                }}
+              />
+              <Box
+                sx={{
+                  width:"95%",
+                  display:"flex",
+                  gap:1
+                }}
+              >
+                <NameField
+                  label="Nome"
+                  name="name"
+                  form={form}
+                  required="Informe o nome"
+                  size="small"
+                  sx={{
+                    width:"50%"
+                  }}
+                />
+                <PasswordField
+                  size="small"
+                  label="Senha"
+                  name="password"
+                  form={form}
+                  required="Informe a senha"
+                  sx={{
+                    width:"50%"
+                  }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  width:"95%",
+                  display:"flex",
+                  gap:1
+                }}
+              >
+                <DateField
+                  size="small"
+                  label="Data de nascimento"
+                  name="date"
+                  form={form}
+                  required="Informe a data"
+                  sx={{
+                    width:"50%"
+                  }}
+                />
+                <SelectField
+                  size="small"
+                  label="Permissão"
+                  name="role"
+                  form={form}
+                  required="Informe a permissão"
+                  sx={{
+                    width:"50%"
+                  }}
+                  options={[
+                    { value: '1', label: 'Opção 1' },
+                    { value: '2', label: 'Opção 2' },
+                  ]}
+                />
+              </Box>
+            </Box>
+          </DialogContent>
+          <Box sx={{width:"95%"}}>
+            <DialogActions>
+              <Button onClick={handleClose}
+                variant='outlined'
+                startIcon={<CloseIcon/>}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit"
+                variant='contained'
+                startIcon={<SendIcon/>}
+              >
+                Criar
+              </Button>
+            </DialogActions>
+          </Box>
+        </Dialog>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 800 }} aria-label="simple table" >
                 <TableHead>
