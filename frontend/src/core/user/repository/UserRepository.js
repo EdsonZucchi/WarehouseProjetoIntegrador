@@ -25,7 +25,7 @@ class UserRepository {
       if (response.status == 200) {
         return response.data;
       }else{
-        return null;
+        return null
       }
     }catch (error) {
       return null;
