@@ -29,11 +29,7 @@ export const Users = () => {
 
   const form = useForm();
 
-  const { handleSubmit, setValue } = form;
-
-  const createUser = (data) => {
-    
-  };
+  const { handleSubmit, reset } = form;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -41,19 +37,42 @@ export const Users = () => {
   const handleClose = () => {
     setOpen(false);
   }
+  const handleResetInputs = () => {
+    reset();
+  }
+
+  const fetchUsers = async () => {
+    try {
+      const users = await userUseCase.getUsers(); 
+      setRows(users); 
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+      setRows([]); 
+    }
+  };
 
   React.useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await userUseCase.getUsers(); 
-        setRows(users); 
-      } catch (error) {
-        console.error("Erro ao buscar usuários:", error);
-        setRows([]); 
-      }
-    };
     fetchUsers();
   }, []);
+
+  const createUser = (data) => {
+    userUseCase.createUser(data?.email, 
+                           data?.nameField,
+                           data?.password,
+                           data?.birthday,
+                           data?.role).then((response) => {
+      try {
+        console.log(response)
+        fetchUsers();
+        handleResetInputs();
+        handleClose();
+      }catch (error) {
+        console.log(response)
+        console.log(error)
+      }
+    })
+  };
+
 
   return (
     <Box
@@ -114,7 +133,7 @@ export const Users = () => {
               >
                 <NameField
                   label="Nome"
-                  name="name"
+                  name="nameField"
                   form={form}
                   required="Informe o nome"
                   size="small"
@@ -143,7 +162,7 @@ export const Users = () => {
                 <DateField
                   size="small"
                   label="Data de nascimento"
-                  name="date"
+                  name="birthday"
                   form={form}
                   required="Informe a data"
                   sx={{
@@ -160,8 +179,10 @@ export const Users = () => {
                     width:"50%"
                   }}
                   options={[
-                    { value: '1', label: 'Opção 1' },
-                    { value: '2', label: 'Opção 2' },
+                    { value: '', label: '' },
+                    { value: 'admin', label: 'Admin' },
+                    { value: 'manager', label: 'Manager' },
+                    { value: 'requester', label: 'Requester' },
                   ]}
                 />
               </Box>
@@ -178,6 +199,7 @@ export const Users = () => {
               <Button type="submit"
                 variant='contained'
                 startIcon={<SendIcon/>}
+                onClick={handleSubmit(createUser)}
               >
                 Criar
               </Button>

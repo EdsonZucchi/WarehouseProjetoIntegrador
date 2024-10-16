@@ -13,8 +13,8 @@ class UserUseCase {
         return userRepository.getUsers()
     }
 
-    async createUser() {
-        return userRepository.createUser();
+    async createUser(email, name, password, birthday, role) {
+        return userRepository.createUser(email, name, password, birthday, role);
     }
 }
 

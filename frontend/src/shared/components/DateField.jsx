@@ -23,6 +23,14 @@ export const DateField = ({
                 error={!!error}
                 helperText={error}
                 type="text"
+                {...register(
+                    name,
+                    !!required
+                      ? {
+                          required,
+                        }
+                      : {}
+                  )}
             />
         </FormControl>
     );

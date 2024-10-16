@@ -47,9 +47,15 @@ class UserRepository {
     }
   }
 
-  async createUser() {
+  async createUser(email, name, password, birthday, role) {
     try { 
-      const response = await httpHelper.post("/auth/register");
+      const response = await httpHelper.post("/user/auth/register", {
+        email : email, 
+        password : password,
+        name : name,
+        birthday: birthday, 
+        role : role
+      });
       if (response.status == 200){
         return response.data;
       }else{

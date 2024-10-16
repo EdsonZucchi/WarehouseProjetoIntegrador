@@ -23,6 +23,14 @@ export const NameField = ({
             error={!!error}
             helperText={error}
             type='text'
+            {...register(
+              name,
+              !!required
+                ? {
+                    required,
+                  }
+                : {}
+            )}
           ></TextField>
         </FormControl>
       );
