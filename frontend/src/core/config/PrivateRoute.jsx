@@ -20,9 +20,9 @@ export const PrivateRoute = ({ children }) => {
       });
   }, [window.location]);
 
-  if (!isLogged && !load) {
-    return <Navigate to={"/login"} />;
-  }
+  // if (!isLogged && !load) {
+  //   return <Navigate to={"/login"} />;
+  // }
 
   return children;
 };

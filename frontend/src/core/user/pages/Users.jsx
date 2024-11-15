@@ -17,6 +17,7 @@ import { NameField } from '../../../shared/components/NameField';
 import { PasswordField } from '../../../shared/components/PasswordField';
 import { DateField } from '../../../shared/components/DateField';
 import { SelectField } from '../../../shared/components/SelectField';
+import { MainLayout } from '../../components/MainLayout';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -56,18 +57,23 @@ export const Users = () => {
   }, []);
 
   return (
-    <Box
-    sx={{
-        display: 'flex',
-        p: 2, 
-        flexDirection: "column", 
-        gap: 5, 
-    }}
-    >
-        <Button 
-          variant="outlined" 
+    <MainLayout>
+      <Box
+        sx={{
+          display: 'flex',
+          p: 2,
+          flexDirection: "column",
+          gap: 4,
+          width: "100%",
+          maxWidth: "1000px",
+          margin: "0 auto",
+        }}
+      >
+        <Button
+          variant="contained"
           sx={{
-            width:"100%"
+            alignSelf: "flex-end",
+            mb: 2,
           }}
           onClick={handleClickOpen}
         >
@@ -79,21 +85,21 @@ export const Users = () => {
           keepMounted
           onClose={handleClose}
           aria-describedby="alert-dialog-slide-description"
-          fullWidth={true}
-          maxWidth={`sm`}
+          fullWidth
+          maxWidth="sm"
         >
-          <DialogTitle>{"Novo usuário"}</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 'bold' }}>Novo usuário</DialogTitle>
           <DialogContent>
-            <Box 
+            <Box
               component="form"
               onSubmit={handleSubmit(createUser)}
-              sx={{ display: "flex", 
-                    alignItems:"center",
-                    justifyContent:"center", 
-                    flexDirection: "column", 
-                    gap: 1, 
-                    width:"100%",
-                  }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                alignItems: "center",
+                width: "100%",
+              }}
             >
               <EmailField
                 label="E-mail"
@@ -101,26 +107,16 @@ export const Users = () => {
                 form={form}
                 required="Informe o e-mail"
                 size="small"
-                sx={{
-                  width:"95%"
-                }}
+                sx={{ width: "90%" }}
               />
-              <Box
-                sx={{
-                  width:"95%",
-                  display:"flex",
-                  gap:1
-                }}
-              >
+              <Box sx={{ display: "flex", gap: 2, width: "90%" }}>
                 <NameField
                   label="Nome"
                   name="name"
                   form={form}
                   required="Informe o nome"
                   size="small"
-                  sx={{
-                    width:"50%"
-                  }}
+                  sx={{ width: "50%" }}
                 />
                 <PasswordField
                   size="small"
@@ -128,27 +124,17 @@ export const Users = () => {
                   name="password"
                   form={form}
                   required="Informe a senha"
-                  sx={{
-                    width:"50%"
-                  }}
+                  sx={{ width: "50%" }}
                 />
               </Box>
-              <Box
-                sx={{
-                  width:"95%",
-                  display:"flex",
-                  gap:1
-                }}
-              >
+              <Box sx={{ display: "flex", gap: 2, width: "90%" }}>
                 <DateField
                   size="small"
                   label="Data de nascimento"
                   name="date"
                   form={form}
                   required="Informe a data"
-                  sx={{
-                    width:"50%"
-                  }}
+                  sx={{ width: "50%" }}
                 />
                 <SelectField
                   size="small"
@@ -156,9 +142,7 @@ export const Users = () => {
                   name="role"
                   form={form}
                   required="Informe a permissão"
-                  sx={{
-                    width:"50%"
-                  }}
+                  sx={{ width: "50%" }}
                   options={[
                     { value: '1', label: 'Opção 1' },
                     { value: '2', label: 'Opção 2' },
@@ -167,62 +151,66 @@ export const Users = () => {
               </Box>
             </Box>
           </DialogContent>
-          <Box sx={{width:"95%"}}>
-            <DialogActions>
-              <Button onClick={handleClose}
-                variant='outlined'
-                startIcon={<CloseIcon/>}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit"
-                variant='contained'
-                startIcon={<SendIcon/>}
-              >
-                Criar
-              </Button>
-            </DialogActions>
-          </Box>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              variant='outlined'
+              startIcon={<CloseIcon />}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant='contained'
+              startIcon={<SendIcon />}
+            >
+              Criar
+            </Button>
+          </DialogActions>
         </Dialog>
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 800 }} aria-label="simple table" >
-                <TableHead>
-                <TableRow>
-                    <TableCell align="left">Nome</TableCell>
-                    <TableCell align="left">E-mail</TableCell>
-                    <TableCell align="left">Data de nascimento</TableCell>
-                    <TableCell align="left">Nível</TableCell>
-                    <TableCell align="center">Inativar</TableCell>
-                </TableRow>
-                </TableHead>
-                <TableBody>
-                {rows.length > 0 ? (
-                  rows.map((row) => (
-                      <TableRow
-                      key={row.email}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                      <TableCell align="left" component="th" scope="row">{row.name}</TableCell>
-                      <TableCell align="left">{row.email}</TableCell>
-                      <TableCell align="left">{row.birthday}</TableCell>
-                      <TableCell align="left">{row.role}</TableCell>
-                      <TableCell align="center">
-                          <IconButton aria-label="delete">
-                              <DeleteIcon />
-                          </IconButton>
-                      </TableCell>
-                      </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      Nenhum usuário encontrado
+        <TableContainer component={Paper} sx={{ boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>
+          <Table sx={{ minWidth: 650 }} aria-label="tabela de usuários">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', color: "#555" }}>Nome</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: "#555" }}>E-mail</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: "#555" }}>Data de nascimento</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: "#555" }}>Nível</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', color: "#555" }}>Inativar</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.length > 0 ? (
+                rows.map((row) => (
+                  <TableRow
+                    key={row.email}
+                    sx={{
+                      '&:nth-of-type(odd)': { backgroundColor: "rgba(245, 245, 245, 0.9)" },
+                      '&:hover': { backgroundColor: "rgba(235, 235, 235, 0.8)" },
+                    }}
+                  >
+                    <TableCell component="th" scope="row">{row.name}</TableCell>
+                    <TableCell>{row.email}</TableCell>
+                    <TableCell>{row.birthday}</TableCell>
+                    <TableCell>{row.role}</TableCell>
+                    <TableCell align="center">
+                      <IconButton aria-label="delete" color="error">
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
-                )}
-                </TableBody>
-            </Table>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ color: "#888" }}>
+                    Nenhum usuário encontrado
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </TableContainer>
-    </Box>
+      </Box>
+    </MainLayout>
   );
 }
