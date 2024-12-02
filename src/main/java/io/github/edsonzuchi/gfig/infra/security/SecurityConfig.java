@@ -36,6 +36,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/user/valid").hasRole("REQUESTER")
                         .requestMatchers(HttpMethod.GET, "/user/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/warehouse/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/warehouse/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/warehouse/**").hasRole("REQUESTER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

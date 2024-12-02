@@ -18,7 +18,7 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private boolean disabled = false;
+    private Boolean disabled = false;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
