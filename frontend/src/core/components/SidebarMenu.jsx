@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, IconButton, Divider } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import HomeIcon from '@mui/icons-material/Home'
+import WarehouseIcon from '@mui/icons-material/Warehouse';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +14,9 @@ export const SidebarMenu = () => {
   const toggleDrawer = () => setOpen(!open);
 
   const menuItems = [
-    { text: 'Home', icon: <HomeIcon />, path: '/home' },
-    { text: 'User', icon: <PersonIcon />, path: '/users' }
+    { text: 'Início', icon: <HomeIcon />, path: '/home' },
+    { text: "Armazéns", icon : <WarehouseIcon/>, path: '/warehouse'},
+    { text: 'Usuários', icon: <PersonIcon />, path: '/users' },
   ];
 
   return (

@@ -1,5 +1,6 @@
 import { httpHelper } from "../../../shared/api/httpHelper";
 import { User } from "../model/User";
+import { Role } from "../model/Role";
 
 class UserRepository {
   async login(login, password) {
@@ -64,6 +65,21 @@ class UserRepository {
     }catch (error) {
       console.error(error);
       return null; 
+    }
+  }
+
+  async getRoles() {
+    try {
+      const response = await httpHelper.get("/user/role");
+      if (response.status == 200){
+        const data = response.data;
+        return data.map(role => new Role(role.key, role.label));
+      }else{
+        return [];
+      }
+    }catch (error) {
+      console.error(error)
+      return [];
     }
   }
 }
