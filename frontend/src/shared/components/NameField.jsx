@@ -8,6 +8,7 @@ export const NameField = ({
     disabled,
     form,
     sx,
+    value, 
 }) => {
   const { register, formState } = form;
   
@@ -16,6 +17,7 @@ export const NameField = ({
     return (
         <FormControl variant="outlined" sx={sx}>
           <TextField
+            value={value}
             size={size}
             autoComplete='off'
             label={label}

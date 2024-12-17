@@ -9,7 +9,10 @@ import io.github.edsonzuchi.gfig.infra.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +53,9 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public List<Warehouse> getWarehouses() {
-        return warehouseRepository.findAll();
+        return warehouseRepository.findAll().stream()
+                .sorted(Comparator.comparing(Warehouse::getDisabled).thenComparing(Warehouse::getName))
+                .collect(Collectors.toList());
     }
 
     @Override
