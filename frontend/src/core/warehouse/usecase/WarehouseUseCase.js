@@ -14,6 +14,10 @@ class WarehouseUseCase {
         return warehouseRepository.disableWarehouse(id);
     }
 
+    async getDetailsWarehouse(id) {
+        return warehouseRepository.getDetailsWarehouse(id);
+    }
+
 }
 
 export const warehouseUsecase = new WarehouseUseCase();

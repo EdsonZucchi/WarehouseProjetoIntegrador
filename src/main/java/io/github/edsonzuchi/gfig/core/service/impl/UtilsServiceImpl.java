@@ -10,4 +10,9 @@ public class UtilsServiceImpl implements UtilsService {
     public boolean isNullOrBlank(String str) {
         return str == null || str.isEmpty();
     }
+
+    @Override
+    public boolean isNullOrBlank(Long str) {
+        return str == null || str == 0L;
+    }
 }

@@ -1,9 +1,13 @@
 package io.github.edsonzuchi.gfig.core.exception;
 
+import io.github.edsonzuchi.gfig.core.service.WarehouseService;
+
 public class WarehouseException extends RuntimeException {
 
     public static WarehouseException NAME_IS_BLANK = new WarehouseException("Name warehouse is blank");
     public static WarehouseException WAREHOUSE_NOT_FOUND = new WarehouseException("Warehouse not found");
+    public static WarehouseException WAREHOUSE_DISABLED = new WarehouseException("Warehouse disabled");
+    public static WarehouseException PRODUCTS_IN_WAREHOUSE = new WarehouseException("Products in warehouse");
 
     public WarehouseException() {
     }

@@ -39,6 +39,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/warehouse/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/warehouse/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.GET, "/warehouse/**").hasRole("REQUESTER")
+                        .requestMatchers(HttpMethod.POST, "/product/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/product/**").hasRole("REQUESTER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

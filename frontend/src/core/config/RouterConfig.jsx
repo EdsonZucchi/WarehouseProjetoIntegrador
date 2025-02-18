@@ -4,6 +4,7 @@ import { PrivateRoute } from "./PrivateRoute";
 import { Users } from "../user/pages/Users";
 import { Home } from "../home/pages/Home";
 import { Warehouse } from "../warehouse/pages/Warehouse";
+import { ProductsView } from "../warehouse/pages/ProductsView";
 
 const DefaultPage = () => {
   return <Outlet />;
@@ -24,6 +25,7 @@ export const RouterConfig = () => {
           <Route path="users" element={<Users/>}/>
           <Route path="home" element={<Home/>}/>
           <Route path="warehouse" element={<Warehouse/>}/>
+          <Route path="warehouse/:id" element={<ProductsView />} />
         </Route>
       </Routes>
     </BrowserRouter>

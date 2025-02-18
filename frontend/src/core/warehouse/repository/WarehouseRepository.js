@@ -1,5 +1,6 @@
 import { httpHelper } from "../../../shared/api/httpHelper";
 import { Warehouse } from "../model/Warehouse";
+import { Product } from "../model/Product";
 
 class WarehouseRepository {
   async getWarehouses() {
@@ -9,7 +10,7 @@ class WarehouseRepository {
         const data = response.data;
         return data.map(
           (warehouse) =>
-            new Warehouse(warehouse.id, warehouse.name, warehouse.disabled)
+            new Warehouse(warehouse.id, warehouse.name, warehouse.disabled, null)
         );
       } else {
         return [];
@@ -48,6 +49,28 @@ class WarehouseRepository {
     } catch (error) {
       console.error(error);
       return null;
+    }
+  }
+
+  async getDetailsWarehouse(id) {
+    try {
+      const response = await httpHelper.get("/product/warehouse/"+id);
+      if (response.status == 200) {
+        const data = response.data;
+
+        const list = data.products.map(
+          (product) => new Product(product.id, product.name, product.quantity, product.idWarehouse)
+        );
+
+        const warehouse = new Warehouse(data.id, data.name, data.disabled, list);
+
+        return warehouse;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      return null; 
     }
   }
 }

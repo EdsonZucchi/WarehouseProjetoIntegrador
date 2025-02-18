@@ -13,11 +13,15 @@ import {Warehouse as WarehouseEntity} from "../model/Warehouse";
 
 import { warehouseUsecase } from "../usecase/WarehouseUseCase";
 
+import { useNavigate } from "react-router-dom";
+
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export const Warehouse = () => {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [warehouses, setWarehouses] = React.useState([]);
 
@@ -47,6 +51,9 @@ export const Warehouse = () => {
   };
   const handleResetInputs = () => {
     reset();
+  };
+  const handleNavigate = (id) => {
+    navigate(`/warehouse/${id}`);
   };
 
   const saveWarehouse = (data) => {
@@ -94,16 +101,18 @@ export const Warehouse = () => {
           margin: "0 auto",
         }}
       >
-        <Button
-          variant="contained"
-          sx={{
-            alignSelf: "flex-end",
-            mb: 2,
-          }}
-          onClick={handleClickOpen}
-        >
-          Novo armazém
-        </Button>
+        <Box sx={{display: "flex", gap: 2}}>
+          <Button
+            variant="contained"
+            sx={{
+              alignSelf: "flex-end",
+              mb: 2,
+            }}
+            onClick={handleClickOpen}
+          >
+            Novo armazém
+          </Button>
+        </Box>
         <WarehouseDialog
           open={open}
           onClose={handleClose}
@@ -114,7 +123,7 @@ export const Warehouse = () => {
           {warehouses.length > 0 ? (
             warehouses.map((warehouse, index) => (
               <Grid2 key={index} xs={12} sm={6}>
-                <WarehouseCard warehouse={warehouse} onClose={() => disableWarehouse(warehouse.id)} />
+                <WarehouseCard warehouse={warehouse} onClose={() => disableWarehouse(warehouse.id)} onClick={() => handleNavigate(warehouse.id)} />
               </Grid2>
             ))
           ) : (

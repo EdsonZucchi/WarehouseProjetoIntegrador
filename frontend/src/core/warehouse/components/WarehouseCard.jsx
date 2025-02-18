@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const WarehouseCard = ({ warehouse, onClose }) => {
+const WarehouseCard = ({ warehouse, onClose, onClick }) => {
   const defaultImage = "https://static.thenounproject.com/png/4595376-200.png";
 
   return (
@@ -23,6 +23,7 @@ const WarehouseCard = ({ warehouse, onClose }) => {
         boxShadow: 3,
         mb: 2, // Espaço entre os cards
       }}
+      onClick={onClick}
     >
       {/* {!warehouse.disable ? ( */}
         <IconButton
