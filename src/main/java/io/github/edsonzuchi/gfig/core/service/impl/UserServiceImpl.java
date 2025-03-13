@@ -11,9 +11,6 @@ import io.github.edsonzuchi.gfig.core.service.UserService;
 import io.github.edsonzuchi.gfig.infra.repository.UserRepository;
 import io.github.edsonzuchi.gfig.infra.security.TokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +32,12 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserDto userDto) throws Exception {
         Optional<User> user = userRepository.findByEmail(userDto.email());
         if (user.isPresent()) {
-            throw UserException.userExists;
+            throw UserException.USER_EXISTS;
         }
 
         UserRole role = UserRole.getRoleOfKey(userDto.role());
         if (role == null) {
-            throw UserException.roleNotFound;
+            throw UserException.ROLE_NOT_FOUND;
         }
 
         User newUser = new User();
@@ -61,14 +58,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String loginUser(LoginDto loginDto) throws Exception {
-        Optional<User> optionalUser = this.userRepository.findByEmail(loginDto.email());
+        var optionalUser = this.userRepository.findByEmail(loginDto.email());
         if (optionalUser.isEmpty()){
-            throw UserException.userNotFound;
+            throw UserException.USER_NOT_FOUND;
         }
 
-        User user = optionalUser.get();
+        var user = optionalUser.get();
         if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
-            throw UserException.wrongPassword;
+            throw UserException.WRONG_PASSWORD;
+        }
+
+        if (user.getStatusCode() == User.STATUS_INACTIVE) {
+            throw UserException.USER_INACTIVE;
         }
 
         return this.tokenService.generateToken(user);
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public String createAdmin() throws Exception {
         var user = this.userRepository.findByEmail("admin");
         if (user.isPresent()) {
-            throw UserException.userAdminExists;
+            throw UserException.USER_ADMIN_EXISTS;
         }
 
         User newUser = new User();

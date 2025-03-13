@@ -20,6 +20,9 @@ import java.util.List;
 @AllArgsConstructor
 public class User {
 
+    public static final int STATUS_ACTIVE = 0;
+    public static final int STATUS_INACTIVE = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,6 +34,8 @@ public class User {
     private LocalDate birthday;
     private UserRole role;
     private Boolean isSystem = false;
+    @Column(nullable = false, name = "status_code")
+    private Integer statusCode = 0;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "update_at")
