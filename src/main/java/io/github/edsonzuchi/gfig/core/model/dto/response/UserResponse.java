@@ -1,4 +1,4 @@
-package io.github.edsonzuchi.gfig.core.model.dto;
+package io.github.edsonzuchi.gfig.core.model.dto.response;
 
 import java.time.LocalDate;
 

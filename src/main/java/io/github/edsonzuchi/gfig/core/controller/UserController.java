@@ -1,8 +1,8 @@
 package io.github.edsonzuchi.gfig.core.controller;
 
 import io.github.edsonzuchi.gfig.core.exception.UserException;
-import io.github.edsonzuchi.gfig.core.model.dto.LoginDto;
-import io.github.edsonzuchi.gfig.core.model.dto.UserDto;
+import io.github.edsonzuchi.gfig.core.model.dto.request.LoginRequest;
+import io.github.edsonzuchi.gfig.core.model.dto.request.UserRequest;
 import io.github.edsonzuchi.gfig.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<Object> register(@RequestBody UserDto userDto) {
+    public ResponseEntity<Object> register(@RequestBody UserRequest userRequest) {
         try {
-            return ResponseEntity.ok(userService.createUser(userDto));
+            return ResponseEntity.ok(userService.createUser(userRequest));
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
@@ -27,9 +27,9 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Object> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) {
         try {
-            String token = userService.loginUser(loginDto);
+            String token = userService.loginUser(loginRequest);
             return ResponseEntity.ok(token);
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());

@@ -1,13 +1,12 @@
 package io.github.edsonzuchi.gfig.core.model.entity;
 
+import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "warehouses")
@@ -20,7 +19,11 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Boolean disabled = false;
+    @Column(nullable = false, name = "status_code")
+    private StatusCode statusCode = StatusCode.ACTIVE;
+
+    @Lob
+    private byte[] media;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

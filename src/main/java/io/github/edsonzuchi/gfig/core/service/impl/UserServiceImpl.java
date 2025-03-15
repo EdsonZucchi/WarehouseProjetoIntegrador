@@ -1,11 +1,12 @@
 package io.github.edsonzuchi.gfig.core.service.impl;
 
 import io.github.edsonzuchi.gfig.core.exception.UserException;
-import io.github.edsonzuchi.gfig.core.model.dto.LoginDto;
-import io.github.edsonzuchi.gfig.core.model.dto.RoleResponse;
-import io.github.edsonzuchi.gfig.core.model.dto.UserDto;
-import io.github.edsonzuchi.gfig.core.model.dto.UserResponse;
+import io.github.edsonzuchi.gfig.core.model.dto.request.LoginRequest;
+import io.github.edsonzuchi.gfig.core.model.dto.response.RoleResponse;
+import io.github.edsonzuchi.gfig.core.model.dto.request.UserRequest;
+import io.github.edsonzuchi.gfig.core.model.dto.response.UserResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
+import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.model.enums.UserRole;
 import io.github.edsonzuchi.gfig.core.service.UserService;
 import io.github.edsonzuchi.gfig.infra.repository.UserRepository;
@@ -29,22 +30,22 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     @Override
-    public UserResponse createUser(UserDto userDto) throws Exception {
-        Optional<User> user = userRepository.findByEmail(userDto.email());
+    public UserResponse createUser(UserRequest userRequest) throws Exception {
+        Optional<User> user = userRepository.findByEmail(userRequest.email());
         if (user.isPresent()) {
             throw UserException.USER_EXISTS;
         }
 
-        UserRole role = UserRole.getRoleOfKey(userDto.role());
+        UserRole role = UserRole.getRoleOfKey(userRequest.role());
         if (role == null) {
             throw UserException.ROLE_NOT_FOUND;
         }
 
         User newUser = new User();
-        newUser.setEmail(userDto.email());
-        newUser.setPassword(passwordEncoder.encode(userDto.password()));
-        newUser.setBirthday(userDto.birthday());
-        newUser.setName(userDto.name());
+        newUser.setEmail(userRequest.email());
+        newUser.setPassword(passwordEncoder.encode(userRequest.password()));
+        newUser.setBirthday(userRequest.birthday());
+        newUser.setName(userRequest.name());
         newUser.setRole(role);
         this.userRepository.save(newUser);
 
@@ -57,18 +58,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String loginUser(LoginDto loginDto) throws Exception {
-        var optionalUser = this.userRepository.findByEmail(loginDto.email());
+    public String loginUser(LoginRequest loginRequest) throws Exception {
+        var optionalUser = this.userRepository.findByEmail(loginRequest.email());
         if (optionalUser.isEmpty()){
             throw UserException.USER_NOT_FOUND;
         }
 
         var user = optionalUser.get();
-        if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw UserException.WRONG_PASSWORD;
         }
 
-        if (user.getStatusCode() == User.STATUS_INACTIVE) {
+        if (user.getStatusCode() == StatusCode.INACTIVE) {
             throw UserException.USER_INACTIVE;
         }
 

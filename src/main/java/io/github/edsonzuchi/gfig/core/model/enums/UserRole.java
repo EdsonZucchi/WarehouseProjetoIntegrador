@@ -1,5 +1,8 @@
 package io.github.edsonzuchi.gfig.core.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum UserRole {
     ADMIN("admin", "Administrador"),
     MANAGER("manager", "Gerente"),
@@ -23,11 +26,4 @@ public enum UserRole {
         return null;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public String getLabel() {
-        return label;
-    }
 }

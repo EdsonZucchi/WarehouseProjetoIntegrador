@@ -1,5 +1,6 @@
 package io.github.edsonzuchi.gfig.core.model.entity;
 
+import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,9 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 public class User {
 
-    public static final int STATUS_ACTIVE = 0;
-    public static final int STATUS_INACTIVE = 1;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +33,7 @@ public class User {
     private UserRole role;
     private Boolean isSystem = false;
     @Column(nullable = false, name = "status_code")
-    private Integer statusCode = 0;
+    private StatusCode statusCode = StatusCode.ACTIVE;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "update_at")
