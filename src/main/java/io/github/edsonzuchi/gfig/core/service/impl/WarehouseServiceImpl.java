@@ -26,7 +26,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public Warehouse saveWarehouse(WarehouseRequest dto) {
-        if (utilsService.isNullOrBlank(dto.name())) {
+        if (utilsService.isEmpty(dto.name())) {
             throw WarehouseException.NAME_IS_BLANK;
         }
         Warehouse warehouse;

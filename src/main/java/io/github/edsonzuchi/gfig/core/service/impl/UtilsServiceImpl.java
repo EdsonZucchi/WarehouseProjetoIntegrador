@@ -7,12 +7,32 @@ import org.springframework.stereotype.Service;
 public class UtilsServiceImpl implements UtilsService {
 
     @Override
-    public boolean isNullOrBlank(String str) {
+    public boolean isEmpty(String str) {
         return str == null || str.isEmpty();
     }
 
     @Override
-    public boolean isNullOrBlank(Long str) {
+    public boolean isEmpty(Long str) {
         return str == null || str == 0L;
+    }
+
+    @Override
+    public boolean isEmpty(Float str) {
+        return str == null;
+    }
+
+    @Override
+    public boolean isEmpty(Double str) {
+        return str == null;
+    }
+
+    @Override
+    public boolean isEmpty(Boolean str) {
+        return str == null;
+    }
+
+    @Override
+    public boolean isEmpty(Integer str) {
+        return str == null;
     }
 }

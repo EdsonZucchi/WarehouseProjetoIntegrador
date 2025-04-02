@@ -2,11 +2,17 @@ package io.github.edsonzuchi.gfig.core.model.entity;
 
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ums")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UM {
 
     @Id
@@ -17,6 +23,10 @@ public class UM {
     private StatusCode statusCode = StatusCode.ACTIVE;;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public UM(String acronym) {
+        this.acronym = acronym;
+    }
 
     @PrePersist
     protected void onCreate() {
