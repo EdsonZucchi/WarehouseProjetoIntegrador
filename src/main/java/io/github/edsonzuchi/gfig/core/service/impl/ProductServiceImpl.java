@@ -7,13 +7,16 @@ import io.github.edsonzuchi.gfig.core.model.dto.response.ProductResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.UMResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.VariantResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.Product;
+import io.github.edsonzuchi.gfig.core.model.entity.Stock;
 import io.github.edsonzuchi.gfig.core.model.entity.UM;
 import io.github.edsonzuchi.gfig.core.model.entity.Variant;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.service.ProductService;
 import io.github.edsonzuchi.gfig.infra.repository.ProductRepository;
+import io.github.edsonzuchi.gfig.infra.repository.StockRepository;
 import io.github.edsonzuchi.gfig.infra.repository.UMRepository;
 import io.github.edsonzuchi.gfig.infra.repository.VariantRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final VariantRepository variantRepository;
     private final UMRepository umRepository;
     private final UtilsServiceImpl utilsServiceImpl;
+    private final StockRepository stockRepository;
 
     @Override
     public Product saveProduct(ProductRequest request) throws ProductException {
@@ -98,18 +102,21 @@ public class ProductServiceImpl implements ProductService {
                 product.getMedia(),
                 product.getLowStockWarning(),
                 product.getLowStockWarningQuantity(),
-                variantsResponse
+                variantsResponse,
+                null,
+                product.getStatusCode().getDescription()
         );
     }
 
     @Override
+    @Transactional
     public List<ProductResponse> getProducts(Integer statusCode) {
         List<ProductResponse> responses = new ArrayList<>();
 
         StatusCode status = null;
         try {
             status = StatusCode.valueOf(statusCode.toString());
-        } catch (IllegalArgumentException ignored) {}
+        } catch (Exception ignored) {}
 
         var products = productRepository.findAll();
 
@@ -118,6 +125,12 @@ public class ProductServiceImpl implements ProductService {
                 if (product.getStatusCode() != status) {
                     continue;
                 }
+            }
+
+            var stocks = stockRepository.findByProductId(product.getId());
+            double quantity = 0;
+            for (Stock stock : stocks) {
+                quantity += stock.getQuantity();
             }
 
             responses.add(new ProductResponse(
@@ -131,7 +144,9 @@ public class ProductServiceImpl implements ProductService {
                     product.getMedia(),
                     product.getLowStockWarning(),
                     product.getLowStockWarningQuantity(),
-                    List.of()
+                    List.of(),
+                    quantity,
+                    product.getStatusCode().getDescription()
             ));
         }
 

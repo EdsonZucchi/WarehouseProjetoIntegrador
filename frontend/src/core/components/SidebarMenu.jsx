@@ -5,6 +5,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
+import CategoryIcon from '@mui/icons-material/Category';
 import { useNavigate } from 'react-router-dom';
 
 export const SidebarMenu = () => {
@@ -15,6 +16,7 @@ export const SidebarMenu = () => {
 
   const menuItems = [
     { text: 'Início', icon: <HomeIcon />, path: '/home' },
+    { text: 'Produtos', icon: <CategoryIcon/>, path: '/product'},
     { text: "Armazéns", icon : <WarehouseIcon/>, path: '/warehouse'},
     { text: 'Usuários', icon: <PersonIcon />, path: '/users' },
   ];

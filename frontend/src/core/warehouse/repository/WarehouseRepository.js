@@ -1,6 +1,5 @@
 import { httpHelper } from "../../../shared/api/httpHelper";
 import { Warehouse } from "../model/Warehouse";
-import { Product } from "../model/Product";
 
 class WarehouseRepository {
   async getWarehouses() {

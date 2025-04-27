@@ -10,6 +10,8 @@ public record ProductResponse (
         byte[] media,
         Boolean lowStockWarning,
         Double lowStockWarningQuantity,
-        List<VariantResponse> variants
+        List<VariantResponse> variants,
+        Double quantityStock,
+        String status
 ){
 }
