@@ -4,6 +4,7 @@ import io.github.edsonzuchi.gfig.core.exception.ProductException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.ProductRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.VariantRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.ProductResponse;
+import io.github.edsonzuchi.gfig.core.model.dto.response.UMResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.Product;
 import io.github.edsonzuchi.gfig.core.model.entity.Variant;
 import org.springframework.stereotype.Service;
@@ -18,4 +19,6 @@ public interface ProductService {
     List<ProductResponse> getProducts(Integer statusCode);
 
     Variant saveVariant(VariantRequest request) throws ProductException;
+
+    List<UMResponse> getUms();
 }

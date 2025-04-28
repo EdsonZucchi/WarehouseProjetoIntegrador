@@ -5,6 +5,7 @@ import { Users } from "../user/pages/Users";
 import { Home } from "../home/pages/Home";
 import { Warehouse } from "../warehouse/pages/Warehouse";
 import ProductPage from "../product/pages/Product";
+import { AlertProvider } from "../components/AlertProvider";
 
 const DefaultPage = () => {
   return <Outlet />;
@@ -12,22 +13,24 @@ const DefaultPage = () => {
 
 export const RouterConfig = () => {
   return (
-    <BrowserRouter basename="/app">
-      <Routes>
-        <Route path="login" element={<Login />} />
-        <Route
-          element={
-            <PrivateRoute>
-              <DefaultPage />
-            </PrivateRoute>
-          }
-        >
-          <Route path="users" element={<Users/>}/>
-          <Route path="home" element={<Home/>}/>
-          <Route path="warehouse" element={<Warehouse/>}/>
-          <Route path="product" element={<ProductPage/>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AlertProvider>
+      <BrowserRouter basename="/app">
+        <Routes>
+          <Route path="login" element={<Login />} />
+          <Route
+            element={
+              <PrivateRoute>
+                <DefaultPage />
+              </PrivateRoute>
+            }
+          >
+            <Route path="users" element={<Users />} />
+            <Route path="home" element={<Home />} />
+            <Route path="warehouse" element={<Warehouse />} />
+            <Route path="product" element={<ProductPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AlertProvider>
   );
 };

@@ -1,16 +1,11 @@
 import { httpHelper } from "../../../shared/api/httpHelper";
 import { Product } from "../model/Product";
-
-const productsMock = [
-    new Product(1, "Produto A", "KG", 150, "Ativo"),
-    new Product(2, "Produto B", "PC", 30, "Inativo"),
-    new Product(3, "Produto C", "UN", 75, "Ativo"),
-];
+import { Unit } from "../model/Unit";
 
 class ProductRepository {
     async getAllProducts() {
         try {
-            const response = await httpHelper.get("/product?status=")
+            const response = await httpHelper.get("/product")
 
             if (response.status == 200) {
                 const data = response.data;
@@ -29,7 +24,49 @@ class ProductRepository {
             console.error(error);
             return [];
         }
-    } 
+    }
+
+    async saveNewProduct(newProduct) {
+        try {
+            const response = await httpHelper.post("/product", newProduct)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async getUms() {
+        try {
+            const response = await httpHelper.get("/product/ums")
+
+            if (response.status == 200) {
+                const data = response.data;
+                return data.map(
+                    (dto) =>
+                        new Unit(
+                            dto.acronym,
+                            dto.name
+                        )
+                )
+
+
+            } else {
+                return [];
+            }
+        } catch (err) {
+            console.error(err)
+            return [];
+        }
+    }
 }
 
 export const productRepository = new ProductRepository();

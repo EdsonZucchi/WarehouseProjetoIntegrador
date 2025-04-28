@@ -15,22 +15,46 @@ import {
 } from "@mui/material";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import { MainLayout } from "../../components/MainLayout";
+import ProductDialog from "../components/ProductDialog";
+import { useAlert } from "../../components/AlertProvider";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
+  const [units, setUnits] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const { showAlert } = useAlert();
 
   const fetchProducts = async () => {
     try {
       const product = await productUsecase.listProducts();
-      setProducts(product)
+      setProducts(product);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setProducts([]);
     }
-  }
+  };
+
+  const fetchUnits = async () => {
+    const unit = await productUsecase.getUms();
+    console.log("aqui = " + unit);
+    setUnits(unit);
+  };
+
+  const handleAddProduct = async (name, description, um) => {
+    try {
+      await productUsecase.saveNewProduct(name, description, um);
+      showAlert("Adicionado com sucesso");
+      fetchProducts();
+      return true;
+    } catch (error) {
+      showAlert(error.message || "Erro ao adicionar", "error");
+      return false;
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
+    fetchUnits();
   }, []);
 
   return (
@@ -43,7 +67,9 @@ const ProductPage = () => {
           mb={2}
         >
           <Typography variant="h4">Produtos</Typography>
-          <Button variant="contained">Novo Produto</Button>
+          <Button variant="contained" onClick={() => setOpenDialog(true)}>
+            Novo Produto
+          </Button>
         </Box>
         <TableContainer
           component={Paper}
@@ -73,6 +99,12 @@ const ProductPage = () => {
               ))}
             </TableBody>
           </Table>
+          <ProductDialog
+            open={openDialog}
+            onClose={() => setOpenDialog(false)}
+            onSave={handleAddProduct}
+            units={units}
+          />
         </TableContainer>
       </Container>
     </MainLayout>

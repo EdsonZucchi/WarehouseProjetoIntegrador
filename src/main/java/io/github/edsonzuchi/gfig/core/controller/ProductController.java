@@ -61,4 +61,14 @@ public class ProductController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/ums")
+    public ResponseEntity<Object> getUmsProducts() {
+        try {
+            return ResponseEntity.ok(productService.getUms());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

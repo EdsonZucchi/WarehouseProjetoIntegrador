@@ -9,6 +9,9 @@ export const httpHelper = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  validateStatus: function (status) {
+    return status >= 200 && status < 500;
+  }
 });
 
 httpHelper.interceptors.request.use(

@@ -185,4 +185,19 @@ public class ProductServiceImpl implements ProductService {
         variant.setProduct(product);
         return variantRepository.save(variant);
     }
+
+    @Override
+    public List<UMResponse> getUms() {
+        var list = umRepository.findByStatusCode(StatusCode.ACTIVE);
+        List<UMResponse> response = new ArrayList<>();
+
+        for (UM um : list) {
+            response.add(new UMResponse(
+                    um.getAcronym(),
+                    um.getName()
+            ));
+        }
+
+        return response;
+    }
 }
