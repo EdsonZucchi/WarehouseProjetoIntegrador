@@ -67,6 +67,27 @@ class ProductRepository {
             return [];
         }
     }
+
+    async getProductById(idProduct) {
+        try {
+            const response = await httpHelper.get("/product/"+idProduct)
+
+            const data = response.data;
+            if (response.status == 200) {
+                return data;
+            } else {
+                const err = new Error(data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
 }
 
 export const productRepository = new ProductRepository();

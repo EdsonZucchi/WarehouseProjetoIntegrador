@@ -15,14 +15,13 @@ import {
 } from "@mui/material";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import { MainLayout } from "../../components/MainLayout";
-import ProductDialog from "../components/ProductDialog";
-import { useAlert } from "../../components/AlertProvider";
+import ProductCard from "../components/ProductCard";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [units, setUnits] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const { showAlert } = useAlert();
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   const fetchProducts = async () => {
     try {
@@ -34,23 +33,21 @@ const ProductPage = () => {
     }
   };
 
+  const handleProduct = (id) => {
+    setSelectedProductId(id);
+    setOpenDialog(true);
+  };
+
   const fetchUnits = async () => {
     const unit = await productUsecase.getUms();
     console.log("aqui = " + unit);
     setUnits(unit);
   };
 
-  const handleAddProduct = async (name, description, um) => {
-    try {
-      await productUsecase.saveNewProduct(name, description, um);
-      showAlert("Adicionado com sucesso");
-      fetchProducts();
-      return true;
-    } catch (error) {
-      showAlert(error.message || "Erro ao adicionar", "error");
-      return false;
-    }
-  };
+  const closeDialog = async () => {
+    setOpenDialog(false); 
+    fetchProducts();
+  }
 
   useEffect(() => {
     fetchProducts();
@@ -67,7 +64,7 @@ const ProductPage = () => {
           mb={2}
         >
           <Typography variant="h4">Produtos</Typography>
-          <Button variant="contained" onClick={() => setOpenDialog(true)}>
+          <Button variant="contained" onClick={() => handleProduct(null)}>
             Novo Produto
           </Button>
         </Box>
@@ -87,11 +84,11 @@ const ProductPage = () => {
             </TableHead>
             <TableBody>
               {products.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow key={product.id} onClick={() => handleProduct(product.id)} sx={{ cursor: 'pointer' }}>
                   <TableCell>
                     <Inventory2Icon />
                   </TableCell>
-                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.name}</TableCell> 
                   <TableCell>{product.unit}</TableCell>
                   <TableCell>{product.quantity}</TableCell>
                   <TableCell>{product.status}</TableCell>
@@ -99,11 +96,11 @@ const ProductPage = () => {
               ))}
             </TableBody>
           </Table>
-          <ProductDialog
+          <ProductCard
             open={openDialog}
-            onClose={() => setOpenDialog(false)}
-            onSave={handleAddProduct}
+            onClose={closeDialog}
             units={units}
+            idProduct={selectedProductId}
           />
         </TableContainer>
       </Container>

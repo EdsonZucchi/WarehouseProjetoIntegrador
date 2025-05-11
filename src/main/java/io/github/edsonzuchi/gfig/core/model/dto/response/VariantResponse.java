@@ -4,6 +4,6 @@ public record VariantResponse(
         Long id,
         String name,
         Integer code,
-        byte[] media
+        String status
 ) {
 }

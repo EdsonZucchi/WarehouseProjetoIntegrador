@@ -7,11 +7,11 @@ public record ProductResponse (
         String name,
         String description,
         UMResponse um,
-        byte[] media,
         Boolean lowStockWarning,
         Double lowStockWarningQuantity,
         List<VariantResponse> variants,
         Double quantityStock,
-        String status
+        String status,
+        Integer statusCode
 ){
 }

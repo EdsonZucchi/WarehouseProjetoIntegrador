@@ -66,7 +66,16 @@ public class ProductServiceImpl implements ProductService {
         product.setLowStockWarning(request.lowStockWarning() != null ? request.lowStockWarning() : false);
         product.setLowStockWarningQuantity(request.lowStockQuantity() != null ? request.lowStockQuantity() : 0);
 
-        return productRepository.save(product);
+        product = productRepository.save(product);
+
+        if (request.variants() != null) {
+            for (VariantRequest variantRequest : request.variants()) {
+                VariantRequest variant = new VariantRequest(variantRequest.id(), product.getId(), variantRequest.name(), variantRequest.code());
+                saveVariant(variant);
+            }
+        }
+
+        return product;
     }
 
     @Override
@@ -87,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
                     variant.getId(),
                     variant.getName(),
                     variant.getCode(),
-                    variant.getMedia()
+                    variant.getStatusCode().getTranslate()
             ));
         }
 
@@ -99,12 +108,12 @@ public class ProductServiceImpl implements ProductService {
                         product.getUm().getAcronym(),
                         product.getUm().getName()
                 ),
-                product.getMedia(),
                 product.getLowStockWarning(),
                 product.getLowStockWarningQuantity(),
                 variantsResponse,
                 null,
-                product.getStatusCode().getDescription()
+                product.getStatusCode().getTranslate(),
+                product.getStatusCode().getCode()
         );
     }
 
@@ -141,12 +150,12 @@ public class ProductServiceImpl implements ProductService {
                             product.getUm().getAcronym(),
                             product.getUm().getName()
                     ),
-                    product.getMedia(),
                     product.getLowStockWarning(),
                     product.getLowStockWarningQuantity(),
                     List.of(),
                     quantity,
-                    product.getStatusCode().getDescription()
+                    product.getStatusCode().getTranslate(),
+                    product.getStatusCode().getCode()
             ));
         }
 
