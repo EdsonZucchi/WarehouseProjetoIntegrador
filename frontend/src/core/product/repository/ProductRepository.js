@@ -16,7 +16,7 @@ class ProductRepository {
                             dto.name,
                             dto.um.acronym,
                             dto.quantityStock,
-                            dto.status == "ACTIVE" ? "ATIVO" : "INATIVO"
+                            dto.status
                         )
                 )
             }

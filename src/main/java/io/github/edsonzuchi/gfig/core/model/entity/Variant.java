@@ -29,6 +29,14 @@ public class Variant {
     private LocalDateTime updatedAt;
     private StatusCode statusCode = StatusCode.ACTIVE;
 
+    @ManyToOne
+    @JoinColumn(name = "created_id_user")
+    private User createdUser;
+
+    @ManyToOne
+    @JoinColumn(name = "updated_id_user")
+    private User updatedUser;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

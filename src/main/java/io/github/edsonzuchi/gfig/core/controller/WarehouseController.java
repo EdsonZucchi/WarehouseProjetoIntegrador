@@ -2,7 +2,9 @@ package io.github.edsonzuchi.gfig.core.controller;
 
 import io.github.edsonzuchi.gfig.core.exception.WarehouseException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.WarehouseRequest;
+import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.service.WarehouseService;
+import io.github.edsonzuchi.gfig.infra.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +40,9 @@ public class WarehouseController {
     @PostMapping("/save")
     public ResponseEntity<Object> saveWarehouse(@RequestBody WarehouseRequest warehouse) {
         try {
-            return ResponseEntity.ok(warehouseService.saveWarehouse(warehouse));
+            User user = SecurityUtil.getUser();
+
+            return ResponseEntity.ok(warehouseService.saveWarehouse(warehouse, user));
         }catch (WarehouseException we){
             return ResponseEntity.unprocessableEntity().body(we.getMessage());
         }catch (Exception e){
@@ -49,7 +53,9 @@ public class WarehouseController {
     @PutMapping("/status/{id}")
     public ResponseEntity<Object> putWarehouseStatus(@PathVariable("id") Long id) {
         try {
-            return ResponseEntity.ok(warehouseService.putStatusWarehouse(id));
+            User user = SecurityUtil.getUser();
+
+            return ResponseEntity.ok(warehouseService.putStatusWarehouse(id, user));
         }catch (WarehouseException we){
             return ResponseEntity.unprocessableEntity().body(we.getMessage());
         }catch (Exception e){

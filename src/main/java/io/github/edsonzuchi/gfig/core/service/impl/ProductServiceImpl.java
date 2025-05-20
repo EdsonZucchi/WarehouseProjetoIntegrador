@@ -6,10 +6,7 @@ import io.github.edsonzuchi.gfig.core.model.dto.request.VariantRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.ProductResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.UMResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.VariantResponse;
-import io.github.edsonzuchi.gfig.core.model.entity.Product;
-import io.github.edsonzuchi.gfig.core.model.entity.Stock;
-import io.github.edsonzuchi.gfig.core.model.entity.UM;
-import io.github.edsonzuchi.gfig.core.model.entity.Variant;
+import io.github.edsonzuchi.gfig.core.model.entity.*;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.service.ProductService;
 import io.github.edsonzuchi.gfig.infra.repository.ProductRepository;
@@ -34,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final StockRepository stockRepository;
 
     @Override
-    public Product saveProduct(ProductRequest request) throws ProductException {
+    public Product saveProduct(ProductRequest request, User user) throws ProductException {
         if (utilsServiceImpl.isEmpty(request.name())) {
             throw ProductException.NAME_IS_BLANK;
         }
@@ -53,11 +50,13 @@ public class ProductServiceImpl implements ProductService {
         Product product;
         if (request.id() == null) {
             product = new Product();
+            product.setCreatedUser(user);
         } else {
             product = productRepository.findById(request.id()).orElse(null);
             if (product == null) {
                 throw ProductException.PRODUCT_NOT_FOUND;
             }
+            product.setUpdatedUser(user);
         }
 
         product.setName(request.name());
@@ -71,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
         if (request.variants() != null) {
             for (VariantRequest variantRequest : request.variants()) {
                 VariantRequest variant = new VariantRequest(variantRequest.id(), product.getId(), variantRequest.name(), variantRequest.code());
-                saveVariant(variant);
+                saveVariant(variant, user);
             }
         }
 
@@ -163,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Variant saveVariant(VariantRequest request) throws ProductException {
+    public Variant saveVariant(VariantRequest request, User user) throws ProductException {
         if (utilsServiceImpl.isEmpty(request.name())) {
             throw ProductException.NAME_IS_BLANK;
         }
@@ -182,11 +181,13 @@ public class ProductServiceImpl implements ProductService {
         Variant variant;
         if (request.id() == null) {
             variant = new Variant();
+            variant.setCreatedUser(user);
         } else {
             variant = variantRepository.findById(request.id()).orElse(null);
             if (variant == null) {
                 throw ProductException.VARIANT_NOT_FOUND;
             }
+            variant.setUpdatedUser(user);
         }
 
         variant.setName(request.name());

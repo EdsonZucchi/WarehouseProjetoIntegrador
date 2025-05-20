@@ -3,9 +3,13 @@ package io.github.edsonzuchi.gfig.core.controller;
 import io.github.edsonzuchi.gfig.core.exception.UserException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.LoginRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.UserRequest;
+import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.service.UserService;
+import io.github.edsonzuchi.gfig.infra.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +22,9 @@ public class UserController {
     @PostMapping("/auth/register")
     public ResponseEntity<Object> register(@RequestBody UserRequest userRequest) {
         try {
-            return ResponseEntity.ok(userService.createUser(userRequest));
+            User user = SecurityUtil.getUser();
+
+            return ResponseEntity.ok(userService.createUser(userRequest, user));
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
@@ -70,6 +76,11 @@ public class UserController {
         }catch (Exception e){
             return ResponseEntity.internalServerError().body("Error processing request");
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Object> getMe() {
+        return ResponseEntity.ok(SecurityUtil.getUser());
     }
 
 }

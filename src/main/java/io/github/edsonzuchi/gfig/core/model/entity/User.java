@@ -39,6 +39,10 @@ public class User {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "created_id_user")
+    private User createdUser;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

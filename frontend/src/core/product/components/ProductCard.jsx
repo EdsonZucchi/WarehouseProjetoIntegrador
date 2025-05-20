@@ -33,12 +33,12 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
     um: "",
     stockAlert: false,
     stockLimit: 0,
-    status: "ACTIVE",
+    status: "Ativo",
     createdAt: "",
   });
 
   const [variants, setVariants] = useState([
-    { id: null, code: "", name: "", status: "ACTIVE" },
+    { id: null, code: "", name: "", status: "Ativo" },
   ]);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
           um: "",
           stockAlert: false,
           stockLimit: 0,
-          status: "ACTIVE",
+          status: "Ativo",
         });
         setVariants([]);
         setDisplayName("Adicionar")
@@ -110,7 +110,7 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
   };
 
   const addVariant = () => {
-    setVariants([...variants, { id: null, code: "", name: "", status: "ACTIVE" }]);
+    setVariants([...variants, { id: null, code: "", name: "", status: "Ativo" }]);
   };
 
   return (

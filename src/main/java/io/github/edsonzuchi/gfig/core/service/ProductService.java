@@ -6,6 +6,7 @@ import io.github.edsonzuchi.gfig.core.model.dto.request.VariantRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.ProductResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.UMResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.Product;
+import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.model.entity.Variant;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,11 @@ import java.util.List;
 @Service
 public interface ProductService {
 
-    Product saveProduct(ProductRequest request) throws ProductException;
+    Product saveProduct(ProductRequest request, User user) throws ProductException;
     ProductResponse getProduct(Long id) throws ProductException;
     List<ProductResponse> getProducts(Integer statusCode);
 
-    Variant saveVariant(VariantRequest request) throws ProductException;
+    Variant saveVariant(VariantRequest request, User user) throws ProductException;
 
     List<UMResponse> getUms();
 }

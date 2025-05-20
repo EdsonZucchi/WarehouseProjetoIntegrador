@@ -3,6 +3,7 @@ package io.github.edsonzuchi.gfig.core.service.impl;
 import io.github.edsonzuchi.gfig.core.exception.WarehouseException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.WarehouseRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.WarehouseResponse;
+import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.model.entity.Warehouse;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.service.UtilsService;
@@ -25,18 +26,20 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final UtilsService utilsService;
 
     @Override
-    public Warehouse saveWarehouse(WarehouseRequest dto) {
+    public Warehouse saveWarehouse(WarehouseRequest dto, User user) {
         if (utilsService.isEmpty(dto.name())) {
             throw WarehouseException.NAME_IS_BLANK;
         }
         Warehouse warehouse;
         if (dto.id() == null){
             warehouse = new Warehouse();
+            warehouse.setCreatedUser(user);
         }else{
             warehouse = warehouseRepository.findById(dto.id()).orElse(null);
             if (warehouse == null) {
                 throw WarehouseException.WAREHOUSE_NOT_FOUND;
             }
+            warehouse.setUpdatedUser(user);
         }
         warehouse.setName(dto.name());
         warehouseRepository.save(warehouse);
@@ -44,7 +47,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public Warehouse putStatusWarehouse(Long id) {
+    public Warehouse putStatusWarehouse(Long id, User user) {
         Warehouse warehouse = warehouseRepository.findById(id).orElse(null);
         if (warehouse == null) {
             throw WarehouseException.WAREHOUSE_NOT_FOUND;

@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     @Override
-    public UserResponse createUser(UserRequest userRequest) throws Exception {
+    public UserResponse createUser(UserRequest userRequest, User userCreated) throws Exception {
         Optional<User> user = userRepository.findByEmail(userRequest.email());
         if (user.isPresent()) {
             throw UserException.USER_EXISTS;
@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
         newUser.setBirthday(userRequest.birthday());
         newUser.setName(userRequest.name());
         newUser.setRole(role);
+        newUser.setCreatedUser(userCreated);
         this.userRepository.save(newUser);
 
         return new UserResponse(
