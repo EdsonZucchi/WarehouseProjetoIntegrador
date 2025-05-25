@@ -17,17 +17,17 @@ public class Stock {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "id_warehouse", nullable = true)
+    @JoinColumn(name = "id_warehouse", nullable = false)
     private Warehouse warehouse;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "id_product", nullable = true)
+    @JoinColumn(name = "id_product", nullable = false)
     private Product product;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "id_variant", nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_variant", nullable = true)
     private Variant variant;
 
     private Double quantity;
