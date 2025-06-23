@@ -14,6 +14,8 @@ public interface RequestService {
 
     RequestResponse saveRequest(RequestRequest request, User user);
     RequestItemResponse saveRequestItem(RequestItemRequest request, User user);
+    RequestItemResponse saveRequestItemDevolution(RequestItemRequest request, User user);
+    RequestResponse returnRequest(Long idRequest);
     RequestResponse finishTypingRequest(Long idRequest);
     List<RequestResponse> getRequests(User user);
     RequestListResponse getRequestList(Long idRequest);

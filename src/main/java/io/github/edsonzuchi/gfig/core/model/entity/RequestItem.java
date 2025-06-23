@@ -27,7 +27,7 @@ public class RequestItem {
     @JoinColumn(name = "id_variant", nullable = true)
     private Variant variant;
     private Double quantityRequested;
-    private Double quantityReturned;
+    private Double quantityReturned = 0.0;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -83,6 +83,9 @@ public class RequestServiceImpl implements RequestService {
             throw RequestException.REQUEST_NOT_FOUND;
         }
         var request = requestOptional.get();
+        if (request.getStatusRequest() != StatusRequest.TYPING) {
+            throw RequestException.REQUEST_NOT_POSSIBLE;
+        }
 
         var variantOptional = variantRepository.findById(requestItem.idVariant());
         if (variantOptional.isEmpty()) {
@@ -108,6 +111,49 @@ public class RequestServiceImpl implements RequestService {
             itemRepository.delete(savedRequest);
             return null;
         }
+
+        itemRepository.save(savedRequest);
+
+        return new RequestItemResponse(
+                savedRequest.getId(),
+                utilsService.requestResponse(savedRequest.getId()),
+                utilsService.productResponse(savedRequest.getProduct().getId()),
+                utilsService.variantResponse(savedRequest.getVariant().getId()),
+                savedRequest.getQuantityRequested()
+        );
+    }
+
+    @Override
+    public RequestItemResponse saveRequestItemDevolution(RequestItemRequest requestItem, User user) {
+        var requestOptional = repository.findById(requestItem.idRequest());
+        if (requestOptional.isEmpty()) {
+            throw RequestException.REQUEST_NOT_FOUND;
+        }
+        var request = requestOptional.get();
+        if (request.getStatusRequest() != StatusRequest.ACCEPTED) {
+            throw RequestException.REQUEST_NOT_POSSIBLE;
+        }
+
+        var variantOptional = variantRepository.findById(requestItem.idVariant());
+        if (variantOptional.isEmpty()) {
+            throw ProductException.VARIANT_NOT_FOUND;
+        }
+        var variant = variantOptional.get();
+        var product = variant.getProduct();
+
+        if (requestItem.quantity() < 0) {
+            throw RequestException.REQUEST_ITEM_QUANTITY_INVALID;
+        }
+
+        RequestItem savedRequest;
+        var optional = itemRepository.findByRequestIdAndVariantId(request.getId(), variant.getId());
+        if (optional.isEmpty()) {
+            throw ProductException.VARIANT_NOT_FOUND;
+        } else {
+            savedRequest = optional.get();
+        }
+
+        savedRequest.setQuantityReturned(requestItem.quantity());
 
         itemRepository.save(savedRequest);
 
@@ -153,6 +199,47 @@ public class RequestServiceImpl implements RequestService {
         }
 
         request.setStatusRequest(StatusRequest.ACCEPTED);
+        repository.save(request);
+
+        return new RequestResponse(
+                request.getId(),
+                utilsService.userResponse(request.getUser().getId()),
+                utilsService.warehouseResponse(request.getWarehouseRequested().getId()),
+                (request.getWarehouseReturned() != null ? utilsService.warehouseResponse(request.getWarehouseReturned().getId()) : null),                request.getStatusRequest().getTranslate(),
+                request.getBodyRequested(),
+                request.getBodyReturned()
+        );
+    }
+
+    @Override
+    public RequestResponse returnRequest(Long idRequest) {
+        var requestOptional = repository.findById(idRequest);
+        if (requestOptional.isEmpty()) {
+            throw RequestException.REQUEST_NOT_FOUND;
+        }
+        var request = requestOptional.get();
+        if (request.getStatusRequest() != StatusRequest.ACCEPTED) {
+            throw RequestException.REQUEST_NOT_POSSIBLE;
+        }
+
+        var items = itemRepository.findByRequestId(idRequest);
+        try {
+            List<StockRelease> stockReleases = new ArrayList<>();
+            for (var item : items) {
+                stockReleases.add(new StockRelease(
+                        request.getWarehouseRequested().getId(),
+                        item.getProduct().getId(),
+                        item.getVariant().getId(),
+                        item.getQuantityRequested(),
+                        TypeMovement.DEVOLUTION
+                ));
+            }
+            stockService.StockListRegister(stockReleases);
+        } catch (StockException se) {
+            throw RequestException.STOCK_INSUFFICIENT;
+        }
+
+        request.setStatusRequest(StatusRequest.RETURNED);
         repository.save(request);
 
         return new RequestResponse(
@@ -261,8 +348,10 @@ public class RequestServiceImpl implements RequestService {
                 }
 
                 Double quantitySelect = 0.0;
+                Double quantityReturned = 0.0;
                 if (requestItems.containsKey(variant.getId())) {
                     quantitySelect = requestItems.get(variant.getId()).getQuantityRequested();
+                    quantityReturned = requestItems.get(variant.getId()).getQuantityReturned();
                 }
 
                 productVariantStockResponses.add(new ProductVariantStockResponse(
@@ -283,7 +372,8 @@ public class RequestServiceImpl implements RequestService {
                                 null
                         ),
                         quantityStock,
-                        quantitySelect
+                        quantitySelect,
+                        quantityReturned
                 ));
             }
         } else {
@@ -319,7 +409,8 @@ public class RequestServiceImpl implements RequestService {
                                 null
                         ),
                         quantityStock,
-                        item.getQuantityRequested()
+                        item.getQuantityRequested(),
+                        item.getQuantityReturned()
                 ));
             }
         }

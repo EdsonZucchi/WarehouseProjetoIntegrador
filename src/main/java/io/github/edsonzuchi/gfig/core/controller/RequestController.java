@@ -39,10 +39,33 @@ public class RequestController {
         }
     }
 
+    @PostMapping("/item/return/save")
+    public ResponseEntity<Object> returnItem(@RequestBody RequestItemRequest request) {
+        try {
+            User user = SecurityUtil.getUser();
+            return ResponseEntity.ok(requestService.saveRequestItemDevolution(request, user));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @PostMapping("/finish/typing/{id}")
     public ResponseEntity<Object> finishTyping(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok(requestService.finishTypingRequest(id));
+        }catch (RequestException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/return/{id}")
+    public ResponseEntity<Object> returnRequest(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(requestService.returnRequest(id));
         }catch (RequestException re) {
             return ResponseEntity.unprocessableEntity().body(re.getMessage());
         }catch (Exception e) {

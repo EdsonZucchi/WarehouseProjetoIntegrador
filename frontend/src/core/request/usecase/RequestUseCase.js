@@ -25,6 +25,16 @@ class RequestUseCase {
     return requestRepository.saveRequestItem(newItem);
   }
 
+  async saveItemRequestReturn(idRequest, idVariant, quantity) {
+    let newItem = {
+      "idRequest" : idRequest, 
+      "idVariant" : idVariant,
+      "quantity" : quantity
+    }
+
+    return requestRepository.saveRequestItemReturn(newItem);
+  }
+
   async listItems(idRequest, filter) {
     return requestRepository.listItems(idRequest, filter);
   }
@@ -35,6 +45,10 @@ class RequestUseCase {
 
   async finishiTyping(idRequest) {
     return requestRepository.finishiTyping(idRequest); 
+  }
+
+  async returnRequest(idRequest) {
+    return requestRepository.returnRequest(idRequest); 
   }
 
   async cancelRequest(idRequest) {

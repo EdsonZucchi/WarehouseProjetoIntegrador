@@ -4,6 +4,7 @@ public record ProductVariantStockResponse(
         ProductResponse product,
         VariantResponse variant,
         Double stockQuantity,
-        Double selectQuantity
+        Double selectQuantity,
+        Double returnQuantity
 ) {
 }

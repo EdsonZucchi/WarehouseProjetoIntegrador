@@ -109,6 +109,42 @@ class RequestRepository {
         }
     }
 
+    async saveRequestItemReturn(newItem) {
+        try {
+            const response = await httpHelper.post("/request/item/return/save", newItem)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async returnRequest(idRequest) {
+        try {
+            const response = await httpHelper.post("/request/return/"+idRequest)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
     async cancelRequest(idRequest) {
         try {
             const response = await httpHelper.delete("/request/"+idRequest)
@@ -153,6 +189,7 @@ class RequestRepository {
                         dto.variant.code,
                         dto.stockQuantity,
                         dto.selectQuantity,
+                        dto.returnQuantity,
                         dto.product.um.acronym.toLowerCase(),
                     )
             );
