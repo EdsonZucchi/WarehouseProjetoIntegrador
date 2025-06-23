@@ -1,7 +1,5 @@
-import React from "react";
 import { SidebarMenu } from "./SidebarMenu";
 import { Box } from "@mui/material";
-import { AlertProvider } from "./AlertProvider";
 
 export const MainLayout = ({ children }) => {
   return (
@@ -12,7 +10,7 @@ export const MainLayout = ({ children }) => {
         sx={{
           flexGrow: 1,
           padding: 3,
-          minHeight: "100vh",
+          minHeight: "91vh",
           overflowX: "hidden",
           overflowY: "auto",
           backgroundColor: "#f9f9f9",

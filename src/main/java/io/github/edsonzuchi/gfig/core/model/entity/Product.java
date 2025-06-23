@@ -23,8 +23,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "um")
     private UM um;
-    @Lob
-    private byte[] media;
     private Boolean lowStockWarning;
     private Double lowStockWarningQuantity;
     private LocalDateTime createdAt;

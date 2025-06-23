@@ -23,8 +23,6 @@ public class Variant {
     private Product product;
     private String name;
     private Integer code;
-    @Lob
-    private byte[] media;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private StatusCode statusCode = StatusCode.ACTIVE;

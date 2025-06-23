@@ -47,4 +47,15 @@ public class RequestController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping
+    public ResponseEntity<Object> getRequests() {
+        try {
+            User user = SecurityUtil.getUser();
+            return ResponseEntity.ok(requestService.getRequests(user));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

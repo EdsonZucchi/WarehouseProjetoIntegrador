@@ -6,6 +6,7 @@ import io.github.edsonzuchi.gfig.core.exception.WarehouseException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestItemRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.RequestItemResponse;
+import io.github.edsonzuchi.gfig.core.model.dto.response.RequestListResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.RequestResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.Request;
 import io.github.edsonzuchi.gfig.core.model.entity.RequestItem;
@@ -17,6 +18,8 @@ import io.github.edsonzuchi.gfig.infra.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -32,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestResponse saveRequest(RequestRequest request, User user) {
-        var warehouseOptional = warehouseRepository.findById(request.id());
+        var warehouseOptional = warehouseRepository.findById(request.warehouseId());
         if (warehouseOptional.isEmpty()) {
             throw WarehouseException.WAREHOUSE_NOT_FOUND;
         }
@@ -61,7 +64,7 @@ public class RequestServiceImpl implements RequestService {
                 save.getId(),
                 utilsService.userResponse(user.getId()),
                 utilsService.warehouseResponse(save.getWarehouseRequested().getId()),
-                utilsService.warehouseResponse(save.getWarehouseReturned().getId()),
+                null,
                 save.getStatusRequest().getTranslate(),
                 save.getBodyRequested(),
                 save.getBodyReturned()
@@ -142,6 +145,62 @@ public class RequestServiceImpl implements RequestService {
                 request.getStatusRequest().getTranslate(),
                 request.getBodyRequested(),
                 request.getBodyReturned()
+        );
+    }
+
+    @Override
+    public List<RequestResponse> getRequests(User user) {
+        List<RequestResponse> requestResponses = new ArrayList<>();
+
+        List<Request> requests;
+        if (user.getAuthorities().size() > 1) {
+            requests = repository.findAllByUserId(user.getId());
+        } else {
+            requests = repository.findAll();
+        }
+
+        for (Request request : requests) {
+            requestResponses.add(new RequestResponse(
+                    request.getId(),
+                    utilsService.userResponse(user.getId()),
+                    utilsService.warehouseResponse(request.getWarehouseRequested().getId()),
+                    (request.getWarehouseReturned() != null ? utilsService.warehouseResponse(request.getWarehouseReturned().getId()) : null),
+                    request.getStatusRequest().getTranslate(),
+                    request.getBodyRequested(),
+                    request.getBodyReturned()
+            ));
+        }
+
+        return requestResponses;
+    }
+
+    @Override
+    public RequestListResponse getRequestList(Long idRequest) {
+        var requestOptional = repository.findById(idRequest);
+        if (requestOptional.isEmpty()) {
+            throw RequestException.REQUEST_NOT_FOUND;
+        }
+        var request = requestOptional.get();
+
+        var items = itemRepository.findByRequestId(idRequest);
+        List<RequestItemResponse> requestItemResponses = new ArrayList<>();
+        for (RequestItem item : items) {
+            requestItemResponses.add(new RequestItemResponse(
+                    item.getId(),
+                    utilsService.requestResponse(item.getRequest().getId()),
+                    utilsService.productResponse(item.getProduct().getId()),
+                    utilsService.variantResponse(item.getVariant().getId()),
+                    item.getQuantityRequested()
+            ));
+        }
+
+        return new RequestListResponse(
+                request.getId(),
+                utilsService.userResponse(request.getUser().getId()),
+                utilsService.warehouseResponse(request.getWarehouseRequested().getId()),
+                request.getStatusRequest().getTranslate(),
+                request.getBodyRequested(),
+                requestItemResponses
         );
     }
 }

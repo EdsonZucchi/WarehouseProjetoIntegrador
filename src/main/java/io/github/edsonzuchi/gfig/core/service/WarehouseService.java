@@ -14,6 +14,5 @@ public interface WarehouseService {
     Warehouse putStatusWarehouse(Long id, User user);
     List<WarehouseResponse> getWarehouses();
     WarehouseResponse getWarehouse(Long id);
-    void uploadWarehouse(Long warehouseId, MultipartFile file);
 
 }

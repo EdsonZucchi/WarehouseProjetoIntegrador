@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum StatusRequest {
 
-    TYPING(0, "Typing", "TYPING", false),
+    TYPING(0, "Typing", "Em digitação", false),
     REQUESTED(1, "Requested", "Requisitado", true),
     ACCEPTED(2, "Accepted", "Aceito", false),
     RETURNED(3, "Returned", "Devolvido", false);

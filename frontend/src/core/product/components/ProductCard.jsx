@@ -23,8 +23,8 @@ import { useEffect } from "react";
 
 export default function ProductCard({ open, onClose, units, idProduct }) {
   const { showAlert } = useAlert();
-  
-  const [displayName, setDisplayName] = useState("") 
+
+  const [displayName, setDisplayName] = useState("");
 
   const [product, setProduct] = useState({
     id: null,
@@ -58,7 +58,7 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
             status: response.status,
           });
           setVariants(response.variants || []);
-          setDisplayName("Atualizar")
+          setDisplayName("Atualizar");
         } catch (error) {
           showAlert("Erro ao buscar produto", "error");
         }
@@ -73,7 +73,7 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
           status: "Ativo",
         });
         setVariants([]);
-        setDisplayName("Adicionar")
+        setDisplayName("Adicionar");
       }
     };
 
@@ -110,7 +110,10 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
   };
 
   const addVariant = () => {
-    setVariants([...variants, { id: null, code: "", name: "", status: "Ativo" }]);
+    setVariants([
+      ...variants,
+      { id: null, code: "", name: "", status: "Ativo" },
+    ]);
   };
 
   return (

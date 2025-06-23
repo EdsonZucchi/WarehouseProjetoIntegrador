@@ -78,8 +78,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             responses.add(new WarehouseResponse(
                             warehouse.getId(),
                             warehouse.getName(),
-                            (warehouse.getStatusCode() == StatusCode.INACTIVE),
-                            null)
+                            (warehouse.getStatusCode() == StatusCode.INACTIVE))
             );
         }
 
@@ -96,23 +95,6 @@ public class WarehouseServiceImpl implements WarehouseService {
         return new WarehouseResponse(
                 warehouse.getId(),
                 warehouse.getName(),
-                (warehouse.getStatusCode() == StatusCode.INACTIVE),
-                warehouse.getMedia());
-    }
-
-    @Override
-    public void uploadWarehouse(Long warehouseId, MultipartFile file) throws WarehouseException {
-        var warehouse = warehouseRepository.findById(warehouseId).orElse(null);
-        if (warehouse == null) {
-            throw WarehouseException.WAREHOUSE_NOT_FOUND;
-        }
-
-        try {
-            warehouse.setMedia(file.getBytes());
-        } catch (IOException ioe) {
-            throw WarehouseException.WAREHOUSE_MEDIA_EXCEPTION;
-        }
-
-        warehouseRepository.save(warehouse);
+                (warehouse.getStatusCode() == StatusCode.INACTIVE));
     }
 }

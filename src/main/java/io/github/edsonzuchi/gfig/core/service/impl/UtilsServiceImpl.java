@@ -60,8 +60,7 @@ public class UtilsServiceImpl implements UtilsService {
         return new WarehouseResponse(
                 warehouse.getId(),
                 warehouse.getName(),
-                warehouse.getStatusCode() == StatusCode.ACTIVE,
-                null
+                warehouse.getStatusCode() == StatusCode.ACTIVE
         );
     }
 

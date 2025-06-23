@@ -62,16 +62,4 @@ public class WarehouseController {
             return ResponseEntity.internalServerError().body("Error processing request");
         }
     }
-
-    @PostMapping("/upload/{id}")
-    public ResponseEntity<Object> uploadWarehouse(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) {
-        try {
-            warehouseService.uploadWarehouse(id, file);
-            return ResponseEntity.ok("Upload successful");
-        } catch (WarehouseException we){
-            return ResponseEntity.unprocessableEntity().body(we.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.internalServerError().body("Error processing request");
-        }
-    }
 }

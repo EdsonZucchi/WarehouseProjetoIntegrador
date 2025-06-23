@@ -21,10 +21,6 @@ public class Warehouse {
     private String name;
     @Column(nullable = false, name = "status_code")
     private StatusCode statusCode = StatusCode.ACTIVE;
-
-    @Lob
-    private byte[] media;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "update_at")
