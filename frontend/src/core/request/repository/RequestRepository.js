@@ -1,5 +1,6 @@
 import { httpHelper } from "../../../shared/api/httpHelper";
 import { Request } from "../model/Request"
+import { VariantItem } from "../model/VariantItem"
 
 class RequestRepository {
 
@@ -15,7 +16,8 @@ class RequestRepository {
                             dto.id,
                             dto.user.name,
                             dto.warehouseRequested.name,
-                            dto.status
+                            dto.status,
+                            0
                         )
                 )
             } else {
@@ -23,12 +25,52 @@ class RequestRepository {
             }
         } catch (error) {
             console.error(error);
-            return []; 
+            return [];
+        }
+    }
+
+    async getRequest(idRequest) {
+        try {
+            const response = await httpHelper.get("/request/" + idRequest)
+
+            if (response.status == 200) {
+                const data = response.data;
+                return new Request(
+                    data.id,
+                    data.user.name,
+                    data.warehouseRequested.name,
+                    data.status,
+                    data.statusCode,
+                )
+            }
+
+            return null;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async finishiTyping(idRequest) {
+        try {
+            const response = await httpHelper.post("/request/finish/typing/"+idRequest)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
         }
     }
 
     async saveRequest(newRequest) {
-        try { 
+        try {
             const response = await httpHelper.post("/request/save", newRequest)
 
             if (response.status != 200) {
@@ -36,14 +78,94 @@ class RequestRepository {
                 err.isCase = true
                 throw err
             }
-        }catch (error) {
-            if (error.isCase) { 
+
+            const data = response.data;
+
+            return data.id;
+        } catch (error) {
+            if (error.isCase) {
                 throw error
             } else {
                 throw Error("Ocorreu um erro na requisição")
             }
         }
     }
+
+    async saveRequestItem(newItem) {
+        try {
+            const response = await httpHelper.post("/request/item/save", newItem)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async cancelRequest(idRequest) {
+        try {
+            const response = await httpHelper.delete("/request/"+idRequest)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async listItems(idRequest, filter) {
+        try {
+            const response = await httpHelper.get("/request/list/item", {
+                params: {
+                    id: idRequest,
+                    filter: filter
+                }
+            })
+
+            if (response.status != 200) {
+                const err = new Error("Erro ao buscar a informação")
+                err.isCase = true
+                throw err
+            }
+
+            const data = response.data;
+            return data.map(
+                (dto) =>
+                    new VariantItem(
+                        dto.product.id,
+                        dto.product.name,
+                        dto.variant.id,
+                        dto.variant.name,
+                        dto.variant.code,
+                        dto.stockQuantity,
+                        dto.selectQuantity,
+                        dto.product.um.acronym.toLowerCase(),
+                    )
+            );
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+
 }
 
 export const requestRepository = new RequestRepository();

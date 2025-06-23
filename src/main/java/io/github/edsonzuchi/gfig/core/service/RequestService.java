@@ -2,6 +2,7 @@ package io.github.edsonzuchi.gfig.core.service;
 
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestItemRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestRequest;
+import io.github.edsonzuchi.gfig.core.model.dto.response.ProductVariantStockResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.RequestItemResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.RequestListResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.RequestResponse;
@@ -16,5 +17,7 @@ public interface RequestService {
     RequestResponse finishTypingRequest(Long idRequest);
     List<RequestResponse> getRequests(User user);
     RequestListResponse getRequestList(Long idRequest);
+    List<ProductVariantStockResponse> getItems(Long idRequest, String filter);
+    void cancelRequest(Long idRequest);
 
 }

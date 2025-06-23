@@ -12,16 +12,17 @@ import { useAlert } from "../../components/AlertProvider";
 import { requestUseCase } from "../usecase/RequestUseCase";
 import { useState } from "react";
 
-export default function RequestCard({ open, onClose, warehouses }) {
+export default function RequestCard({ open, onClose, warehouses, openItems }) {
   const { showAlert } = useAlert();
   const [warehouse, setWarehouse] = useState(0);
   const [body, setBody] = useState(""); 
 
   const handleAddRequest = async () => {
     try {
-      await requestUseCase.saveRequest(null, warehouse, body)
+      let id = await requestUseCase.saveRequest(null, warehouse, body)
       showAlert("Adicionado com sucesso");
       onClose();
+      openItems(id);
       return true;
     } catch (error) {
       showAlert(error.message || "Erro ao adicionar", "error");

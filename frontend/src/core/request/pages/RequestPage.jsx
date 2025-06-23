@@ -106,6 +106,7 @@ const RequestPage = () => {
            open={openDialog}
            onClose={closeDialog}
            warehouses={warehouses}
+           openItems={handleDialogItem}
           />
           <RequestItemCard
             open={openDialogItem}

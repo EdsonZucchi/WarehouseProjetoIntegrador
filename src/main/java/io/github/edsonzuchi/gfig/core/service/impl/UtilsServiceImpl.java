@@ -3,12 +3,11 @@ package io.github.edsonzuchi.gfig.core.service.impl;
 import io.github.edsonzuchi.gfig.core.model.dto.response.*;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.service.UtilsService;
-import io.github.edsonzuchi.gfig.infra.repository.ProductRepository;
-import io.github.edsonzuchi.gfig.infra.repository.UserRepository;
-import io.github.edsonzuchi.gfig.infra.repository.VariantRepository;
-import io.github.edsonzuchi.gfig.infra.repository.WarehouseRepository;
+import io.github.edsonzuchi.gfig.infra.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +17,7 @@ public class UtilsServiceImpl implements UtilsService {
     private final ProductRepository productRepository;
     private final VariantRepository variantRepository;
     private final UserRepository userRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public boolean isEmpty(String str) {
@@ -82,16 +82,61 @@ public class UtilsServiceImpl implements UtilsService {
 
     @Override
     public ProductResponse productResponse(Long idProduct) {
-        return null;
+        var optional = productRepository.findById(idProduct);
+        if (optional.isEmpty()) {
+            return null;
+        }
+        var product = optional.get();
+
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                new UMResponse(
+                        product.getUm().getAcronym(),
+                        product.getUm().getName()
+                ),
+                product.getLowStockWarning(),
+                product.getLowStockWarningQuantity(),
+                List.of(),
+                null,
+                product.getStatusCode().getTranslate(),
+                product.getStatusCode().getCode()
+        );
     }
 
     @Override
     public VariantResponse variantResponse(Long idVariant) {
-        return null;
+        var optional = variantRepository.findById(idVariant);
+        if (optional.isEmpty()) {
+            return null;
+        }
+        var variant = optional.get();
+
+        return new VariantResponse(
+                variant.getId(),
+                variant.getName(),
+                variant.getCode(),
+                variant.getStatusCode().getTranslate()
+        );
     }
 
     @Override
     public RequestResponse requestResponse(Long idRequest) {
-        return null;
+        var optional = requestRepository.findById(idRequest);
+        if (optional.isEmpty()) {
+            return null;
+        }
+        var request = optional.get();
+
+        return new RequestResponse(
+                request.getId(),
+                userResponse(request.getUser().getId()),
+                (request.getWarehouseRequested() != null ? warehouseResponse(request.getWarehouseRequested().getId()) : null),
+                (request.getWarehouseReturned() != null ? warehouseResponse(request.getWarehouseReturned().getId()) : null),
+                request.getStatusRequest().getTranslate(),
+                request.getBodyRequested(),
+                request.getBodyReturned()
+        );
     }
 }

@@ -14,6 +14,32 @@ class RequestUseCase {
 
     return requestRepository.saveRequest(newRequest);
   }
+
+  async saveItemRequest(idRequest, idVariant, quantity) {
+    let newItem = {
+      "idRequest" : idRequest, 
+      "idVariant" : idVariant,
+      "quantity" : quantity
+    }
+
+    return requestRepository.saveRequestItem(newItem);
+  }
+
+  async listItems(idRequest, filter) {
+    return requestRepository.listItems(idRequest, filter);
+  }
+
+  async getRequest(idRequest) {
+    return requestRepository.getRequest(idRequest);
+  }
+
+  async finishiTyping(idRequest) {
+    return requestRepository.finishiTyping(idRequest); 
+  }
+
+  async cancelRequest(idRequest) {
+    return requestRepository.cancelRequest(idRequest);
+  }
 }
 
 export const requestUseCase = new RequestUseCase();

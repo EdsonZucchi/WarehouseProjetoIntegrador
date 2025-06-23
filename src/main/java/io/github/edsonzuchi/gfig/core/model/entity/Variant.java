@@ -45,4 +45,32 @@ public class Variant {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public boolean isActive() {
+        return this.statusCode == StatusCode.ACTIVE;
+    }
+
+    public boolean containsFilter(String filter) {
+        if (filter == null || filter.isEmpty()) {
+            return true;
+        }
+
+        String filterLow = filter.toLowerCase();
+        String nameFilter = this.name.toLowerCase();
+        String codeFilter = this.code.toString().toLowerCase();
+
+        if (nameFilter.equals(filterLow) || nameFilter.contains(filterLow)) {
+            return true;
+        }
+
+        if (codeFilter.equals(filterLow) || codeFilter.contains(filterLow)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean notContainsFilter(String filter) {
+        return !containsFilter(filter);
+    }
 }

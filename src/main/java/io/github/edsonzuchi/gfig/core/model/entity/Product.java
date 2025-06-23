@@ -47,4 +47,32 @@ public class Product {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public boolean isActive() {
+        return this.statusCode == StatusCode.ACTIVE;
+    }
+
+    public boolean containsFilter(String filter) {
+        if (filter == null || filter.isEmpty()) {
+            return true;
+        }
+
+        String filterLow = filter.toLowerCase();
+        String nameFilter = this.name.toLowerCase();
+        String descriptionFilter = this.description.toLowerCase();
+
+        if (nameFilter.equals(filterLow) || nameFilter.contains(filterLow)) {
+            return true;
+        }
+
+        if (descriptionFilter.equals(filterLow) || descriptionFilter.contains(filterLow)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean notContainsFilter(String filter) {
+        return !containsFilter(filter);
+    }
 }

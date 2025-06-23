@@ -1,5 +1,6 @@
 package io.github.edsonzuchi.gfig.core.controller;
 
+import io.github.edsonzuchi.gfig.core.exception.RequestException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestItemRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestRequest;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
@@ -42,6 +43,8 @@ public class RequestController {
     public ResponseEntity<Object> finishTyping(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok(requestService.finishTypingRequest(id));
+        }catch (RequestException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
@@ -53,6 +56,39 @@ public class RequestController {
         try {
             User user = SecurityUtil.getUser();
             return ResponseEntity.ok(requestService.getRequests(user));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getRequest(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(requestService.getRequestList(id));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/list/item")
+    public ResponseEntity<Object> getListItems(@RequestParam("id") Long id, @RequestParam("filter") String filter) {
+        try {
+            return ResponseEntity.ok(requestService.getItems(id, filter));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+        try {
+            requestService.cancelRequest(id);
+            return ResponseEntity.ok(true);
+        }catch (RequestException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();

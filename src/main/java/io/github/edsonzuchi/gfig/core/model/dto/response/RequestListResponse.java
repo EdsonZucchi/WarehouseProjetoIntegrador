@@ -7,6 +7,7 @@ public record RequestListResponse(
         UserResponse user,
         WarehouseResponse warehouseRequested,
         String status,
+        Integer statusCode,
         String bodyRequested,
         List<RequestItemResponse> items
 ) {
