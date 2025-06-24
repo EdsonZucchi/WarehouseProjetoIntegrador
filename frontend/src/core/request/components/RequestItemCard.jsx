@@ -195,6 +195,11 @@ export default function RequestItemCard({ open, onClose, idRequest }) {
     }
   }, [filter]);
 
+  const parseIfNumber = (value) => {
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  };
+
   const getRowBackgroundColor = (item) => {
     if (map.has(item.variantId)) {
       return "#e6ffe6"; // Verde claro
@@ -317,9 +322,7 @@ export default function RequestItemCard({ open, onClose, idRequest }) {
                 </TableHead>
                 <TableBody>
                   {items.map((item) => (
-                    <TableRow
-                      key={item.variantId}
-                    >
+                    <TableRow key={item.variantId}>
                       <TableCell>{item.productName}</TableCell>
                       <TableCell>
                         {item.variantCode} - {item.variantName}
@@ -378,7 +381,7 @@ export default function RequestItemCard({ open, onClose, idRequest }) {
                               onChange={(e) =>
                                 setQuantity(
                                   item.variantId,
-                                  Number(e.target.value)
+                                  parseIfNumber(e.target.value)
                                 )
                               }
                             />
@@ -443,7 +446,7 @@ export default function RequestItemCard({ open, onClose, idRequest }) {
                               onChange={(e) =>
                                 setQuantity(
                                   item.variantId,
-                                  Number(e.target.value)
+                                  parseIfNumber(e.target.value)
                                 )
                               }
                             />

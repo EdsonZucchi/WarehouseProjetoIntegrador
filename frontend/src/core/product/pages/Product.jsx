@@ -11,9 +11,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
 import { MainLayout } from "../../components/MainLayout";
 import ProductCard from "../components/ProductCard";
 
@@ -22,10 +22,11 @@ const ProductPage = () => {
   const [units, setUnits] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
+  const [filter, setFilter] = useState("");
 
   const fetchProducts = async () => {
     try {
-      const product = await productUsecase.listProducts();
+      const product = await productUsecase.listProducts(filter);
       setProducts(product);
     } catch (error) {
       console.log(error);
@@ -45,14 +46,14 @@ const ProductPage = () => {
   };
 
   const closeDialog = async () => {
-    setOpenDialog(false); 
+    setOpenDialog(false);
     fetchProducts();
-  }
+  };
 
   useEffect(() => {
     fetchProducts();
     fetchUnits();
-  }, []);
+  }, [filter]);
 
   return (
     <MainLayout>
@@ -68,6 +69,12 @@ const ProductPage = () => {
             Novo Produto
           </Button>
         </Box>
+        <TextField
+          label="Filtro"
+          fullWidth
+          onChange={(e) => setFilter(e.target.value)}
+          sx={{ marginBottom: "12px" }}
+        />
         <TableContainer
           component={Paper}
           sx={{ boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}
@@ -75,7 +82,6 @@ const ProductPage = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Media</TableCell>
                 <TableCell>Nome</TableCell>
                 <TableCell>Unidade de Medida</TableCell>
                 <TableCell>Quantidade em Estoque</TableCell>
@@ -84,11 +90,12 @@ const ProductPage = () => {
             </TableHead>
             <TableBody>
               {products.map((product) => (
-                <TableRow key={product.id} onClick={() => handleProduct(product.id)} sx={{ cursor: 'pointer' }}>
-                  <TableCell>
-                    <Inventory2Icon />
-                  </TableCell>
-                  <TableCell>{product.name}</TableCell> 
+                <TableRow
+                  key={product.id}
+                  onClick={() => handleProduct(product.id)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell>{product.name}</TableCell>
                   <TableCell>{product.unit}</TableCell>
                   <TableCell>{product.quantity}</TableCell>
                   <TableCell>{product.status}</TableCell>

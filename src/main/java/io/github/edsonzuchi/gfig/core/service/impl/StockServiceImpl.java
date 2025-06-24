@@ -2,9 +2,12 @@ package io.github.edsonzuchi.gfig.core.service.impl;
 
 import io.github.edsonzuchi.gfig.core.exception.StockException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.StockRelease;
+import io.github.edsonzuchi.gfig.core.model.dto.request.StockRequest;
 import io.github.edsonzuchi.gfig.core.model.entity.Stock;
 import io.github.edsonzuchi.gfig.core.model.entity.StockId;
 import io.github.edsonzuchi.gfig.core.model.entity.Variant;
+import io.github.edsonzuchi.gfig.core.model.entity.Warehouse;
+import io.github.edsonzuchi.gfig.core.model.enums.TypeMovement;
 import io.github.edsonzuchi.gfig.core.service.StockService;
 import io.github.edsonzuchi.gfig.core.service.UtilsService;
 import io.github.edsonzuchi.gfig.infra.repository.ProductRepository;
@@ -87,5 +90,27 @@ public class StockServiceImpl implements StockService {
         for (StockRelease stockRelease : list) {
             this.StockRegister(stockRelease);
         }
+    }
+
+    @Override
+    @Transactional
+    public Stock Inventory(StockRequest request) throws StockException {
+        Variant variant = variantRepository.findById(request.idVariant()).orElse(null);
+        if (variant == null) {
+            throw StockException.VARIANT_NOT_FOUND;
+        }
+
+        Warehouse warehouse = warehouseRepository.findById(request.idWarehouse()).orElse(null);
+        if (warehouse == null) {
+            throw StockException.WAREHOUSE_NOT_FOUND;
+        }
+
+        return this.StockRegister(new StockRelease(
+                request.idWarehouse(),
+                variant.getProduct().getId(),
+                request.idVariant(),
+                request.quantity(),
+                TypeMovement.INVENTORY
+        ));
     }
 }

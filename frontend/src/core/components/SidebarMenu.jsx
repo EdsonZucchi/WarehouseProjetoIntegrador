@@ -13,15 +13,17 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ArticleIcon from '@mui/icons-material/Article';
 import CategoryIcon from "@mui/icons-material/Category";
 import { useNavigate } from "react-router-dom";
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 export const SidebarMenu = () => {
   const navigate = useNavigate();
 
   const menuItems = [
     { text: "Início", icon: <HomeIcon />, path: "/home" },
+    { text: "Requisições", icon: <ArticleIcon />, path: "/request" },
     { text: "Armazéns", icon: <WarehouseIcon />, path: "/warehouse" },
     { text: "Produtos", icon: <CategoryIcon />, path: "/product" },
-    { text: "Requisições", icon: <ArticleIcon />, path: "/request" },
+    { text: "Inventário", icon: <InventoryIcon />, path: "/inventory" },
     { text: "Usuários", icon: <PersonIcon />, path: "/users" },
   ];
 

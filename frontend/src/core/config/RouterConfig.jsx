@@ -11,6 +11,7 @@ import { Users } from "../user/pages/Users";
 import { Home } from "../home/pages/Home";
 import { Warehouse } from "../warehouse/pages/Warehouse";
 import ProductPage from "../product/pages/Product";
+import Inventory from "../product/pages/Inventory";
 import RequestPage from "../request/pages/RequestPage";
 import { AlertProvider } from "../components/AlertProvider";
 import { ConfirmDialogProvider } from "../components/ConfirmDialogContext";
@@ -39,6 +40,7 @@ export const RouterConfig = () => {
               <Route path="warehouse" element={<Warehouse />} />
               <Route path="product" element={<ProductPage />} />
               <Route path="request" element={<RequestPage />} />
+              <Route path="inventory" element={<Inventory />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,18 +1,17 @@
 package io.github.edsonzuchi.gfig.core.service.impl;
 
 import io.github.edsonzuchi.gfig.core.exception.ProductException;
+import io.github.edsonzuchi.gfig.core.exception.WarehouseException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.ProductRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.VariantRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.ProductResponse;
+import io.github.edsonzuchi.gfig.core.model.dto.response.ProductVariantStockResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.UMResponse;
 import io.github.edsonzuchi.gfig.core.model.dto.response.VariantResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.*;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.service.ProductService;
-import io.github.edsonzuchi.gfig.infra.repository.ProductRepository;
-import io.github.edsonzuchi.gfig.infra.repository.StockRepository;
-import io.github.edsonzuchi.gfig.infra.repository.UMRepository;
-import io.github.edsonzuchi.gfig.infra.repository.VariantRepository;
+import io.github.edsonzuchi.gfig.infra.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
     private final UMRepository umRepository;
     private final UtilsServiceImpl utilsServiceImpl;
     private final StockRepository stockRepository;
+    private final WarehouseRepository warehouseRepository;
 
     @Override
     public Product saveProduct(ProductRequest request, User user) throws ProductException {
@@ -118,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public List<ProductResponse> getProducts(Integer statusCode) {
+    public List<ProductResponse> getProducts(Integer statusCode, String filter) {
         List<ProductResponse> responses = new ArrayList<>();
 
         StatusCode status = null;
@@ -133,6 +133,10 @@ public class ProductServiceImpl implements ProductService {
                 if (product.getStatusCode() != status) {
                     continue;
                 }
+            }
+
+            if (product.notContainsFilter(filter)) {
+                continue;
             }
 
             var stocks = stockRepository.findByProductId(product.getId());
@@ -209,5 +213,54 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return response;
+    }
+
+    @Override
+    public List<ProductVariantStockResponse> getVariantStocks(Long idWarehouse, String filter) {
+        List<ProductVariantStockResponse> productVariantStockResponses = new ArrayList<>();
+
+        var warehouse = warehouseRepository.findById(idWarehouse).orElse(null);
+        if (warehouse == null) {
+            throw WarehouseException.WAREHOUSE_NOT_FOUND;
+        }
+
+        var variants = variantRepository.findAll();
+        for (Variant variant : variants) {
+            var product = variant.getProduct();
+
+            if (product.notContainsFilter(filter) && variant.notContainsFilter(filter)) {
+                continue;
+            }
+
+            Double quantityStock = 0.0;
+            var optionalStock = stockRepository.findById(new StockId(warehouse, product, variant));
+            if (optionalStock.isPresent()) {
+                quantityStock = optionalStock.get().getQuantity();
+            }
+
+            productVariantStockResponses.add(new ProductVariantStockResponse(
+                    new ProductResponse(
+                            product.getId(),
+                            product.getName(),
+                            null,
+                            new UMResponse(
+                                    product.getUm().getAcronym(),
+                                    null
+                            ),
+                            null, null, null, null, null, null
+                    ),
+                    new VariantResponse(
+                            variant.getId(),
+                            variant.getName(),
+                            variant.getCode(),
+                            null
+                    ),
+                    quantityStock,
+                    null,
+                    null
+            ));
+        }
+
+        return productVariantStockResponses;
     }
 }
