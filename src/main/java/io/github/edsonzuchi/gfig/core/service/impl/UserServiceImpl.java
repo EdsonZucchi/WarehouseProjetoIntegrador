@@ -13,6 +13,7 @@ import io.github.edsonzuchi.gfig.core.service.UtilsService;
 import io.github.edsonzuchi.gfig.infra.repository.UserRepository;
 import io.github.edsonzuchi.gfig.infra.security.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UtilsService utilsService;
     private final TokenService tokenService;
-    private final String DEFAULT_PASSWORD = "123456";
+    @Value("${default.password}")
+    private String DEFAULT_PASSWORD;
 
     @Override
     public UserResponse createUser(UserRequest userRequest, User userCreated) throws Exception {
