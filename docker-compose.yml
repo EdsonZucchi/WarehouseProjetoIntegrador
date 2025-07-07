@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_PASSWORD=ekQwBQz4ABgVz2NY
+      - DB_URL=jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
+      - DB_USERNAME=postgres.bgvlrdnmceuuozmjozuh
+      - SECRET_KEY=testeDesenv
+      - DEFAULT_PASSWORD=123456
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend-app
+    ports:
+      - "3000:80"
+
+volumes:
+  pgdata:
