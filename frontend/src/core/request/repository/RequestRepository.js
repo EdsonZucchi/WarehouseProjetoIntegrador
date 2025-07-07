@@ -145,9 +145,63 @@ class RequestRepository {
         }
     }
 
+    async returnPartialRequest(idRequest) {
+        try {
+            const response = await httpHelper.post("/request/return/partial/"+idRequest)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
     async cancelRequest(idRequest) {
         try {
             const response = await httpHelper.delete("/request/"+idRequest)
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async rejectedRequest(idRequest) {
+        try {
+            const response = await httpHelper.post("/request/"+idRequest+"/rejected")
+
+            if (response.status != 200) {
+                const err = new Error(response.data)
+                err.isCase = true
+                throw err
+            }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async acceptedRequest(idRequest) {
+        try {
+            const response = await httpHelper.post("/request/"+idRequest+"/accepted")
 
             if (response.status != 200) {
                 const err = new Error(response.data)
@@ -190,6 +244,7 @@ class RequestRepository {
                         dto.stockQuantity,
                         dto.selectQuantity,
                         dto.returnQuantity,
+                        dto.pendingQuantity,
                         dto.product.um.acronym.toLowerCase(),
                     )
             );

@@ -1,5 +1,6 @@
 package io.github.edsonzuchi.gfig.core.model.entity;
 
+import io.github.edsonzuchi.gfig.core.model.enums.TypeMovement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,38 +9,37 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "request_items")
+@Table(name = "stock_movements")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestItem {
+public class StockMovement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
-    @JoinColumn(name = "id_request", nullable = false)
-    private Request request;
+    @JoinColumn(name = "id_warehouse")
+    private Warehouse warehouse;
     @ManyToOne
-    @JoinColumn(name = "id_product", nullable = false)
+    @JoinColumn(name = "id_product")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "id_variant", nullable = true)
+    @JoinColumn(name = "id_variant")
     private Variant variant;
-    private Double quantityRequested;
-    private Double quantityPending = 0.0;
-    private Double quantityReturned = 0.0;
+
+    private Double quantity;
+    private TypeMovement typeMovement;
+
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private User user;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

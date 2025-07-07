@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/user/me").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/admin").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/auth/register").hasRole("ADMIN")
@@ -42,8 +43,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/product/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.GET, "/product/**").hasRole("REQUESTER")
                         .requestMatchers(HttpMethod.GET, "/product").hasRole("REQUESTER")
-                        .requestMatchers(HttpMethod.GET, "/request/**").hasRole("REQUESTER")
-                        .requestMatchers(HttpMethod.POST, "/request/**").hasRole("REQUESTER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
@@ -51,7 +50,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder  passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

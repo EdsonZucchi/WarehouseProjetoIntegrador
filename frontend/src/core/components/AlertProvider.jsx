@@ -1,34 +1,54 @@
 import { createContext, useContext, useState } from "react";
-import { Snackbar, Alert } from "@mui/material";
+import { Alert, Slide, Box } from "@mui/material";
 
 const AlertContext = createContext();
 
 export const useAlert = () => useContext(AlertContext);
 
 export const AlertProvider = ({ children }) => {
-  const [alert, setAlert] = useState({ open: false, severity: "success", message: "" });
+  const [alerts, setAlerts] = useState([]);
 
   const showAlert = (message, severity = "success") => {
-    setAlert({ open: true, severity, message });
+    const id = new Date().getTime();
+    const newAlert = { id, message, severity };
+    setAlerts((prev) => [...prev, newAlert]);
+
+    setTimeout(() => {
+      setAlerts((prev) => prev.filter((alert) => alert.id !== id));
+    }, 2000);
   };
 
-  const handleClose = () => {
-    setAlert({ ...alert, open: false });
+  const handleClose = (id) => {
+    setAlerts((prev) => prev.filter((alert) => alert.id !== id));
   };
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
       {children}
-      <Snackbar
-        open={alert.open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 16,
+          right: 16,
+          zIndex: 1400,
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        }}
       >
-        <Alert onClose={handleClose} severity={alert.severity} variant="filled" sx={{ width: "100%" }}>
-          {alert.message}
-        </Alert>
-      </Snackbar>
+        {alerts.map((alert) => (
+          <Slide in={true} direction="down" key={alert.id}>
+            <Alert
+              onClose={() => handleClose(alert.id)}
+              severity={alert.severity}
+              variant="filled"
+              sx={{ width: "100%" }}
+            >
+              {alert.message}
+            </Alert>
+          </Slide>
+        ))}
+      </Box>
     </AlertContext.Provider>
   );
 };

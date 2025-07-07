@@ -257,6 +257,7 @@ public class ProductServiceImpl implements ProductService {
                     ),
                     quantityStock,
                     null,
+                    null,
                     null
             ));
         }

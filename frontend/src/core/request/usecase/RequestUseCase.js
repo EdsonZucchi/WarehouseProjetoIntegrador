@@ -51,8 +51,20 @@ class RequestUseCase {
     return requestRepository.returnRequest(idRequest); 
   }
 
+  async returnPartialRequest(idRequest) {
+    return requestRepository.returnPartialRequest(idRequest); 
+  }
+
   async cancelRequest(idRequest) {
     return requestRepository.cancelRequest(idRequest);
+  }
+
+  async acceptedRequest(idRequest) {
+    return requestRepository.acceptedRequest(idRequest);
+  }
+
+  async rejectedRequest(idRequest) {
+    return requestRepository.rejectedRequest(idRequest);
   }
 }
 

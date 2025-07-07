@@ -7,9 +7,9 @@ import {
 } from "react-router-dom";
 import { Login } from "../user/pages/Login";
 import { PrivateRoute } from "./PrivateRoute";
-import { Users } from "../user/pages/Users";
+import Users from "../user/pages/Users";
 import { Home } from "../home/pages/Home";
-import { Warehouse } from "../warehouse/pages/Warehouse";
+import Warehouse from "../warehouse/pages/Warehouse";
 import ProductPage from "../product/pages/Product";
 import Inventory from "../product/pages/Inventory";
 import RequestPage from "../request/pages/RequestPage";

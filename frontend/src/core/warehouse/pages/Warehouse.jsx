@@ -1,136 +1,131 @@
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import { MainLayout } from "../../components/MainLayout";
 import {
   Box,
   Button,
-  Grid2,
-  Slide,
+  Container,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
 } from "@mui/material";
-import WarehouseCard from "../components/WarehouseCard";
+import { MainLayout } from "../../components/MainLayout";
+import { useEffect, useState } from "react";
+import { useAlert } from "../../components/AlertProvider";
+import SyncDisabledIcon from "@mui/icons-material/SyncDisabled";
+import SyncIcon from "@mui/icons-material/Sync";
+import { warehouseUsecase } from "../../warehouse/usecase/WarehouseUseCase";
+import { useConfirm } from "../../components/ConfirmDialogContext";
 import WarehouseDialog from "../components/WarehouseDialog";
-import {Warehouse as WarehouseEntity} from "../model/Warehouse";
 
-import { warehouseUsecase } from "../usecase/WarehouseUseCase";
+const Warehouse = () => {
+  const { showAlert } = useAlert();
+  const confirm = useConfirm();
+  const [warehouses, setWarehouses] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
 
-import { useNavigate } from "react-router-dom";
-
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-export const Warehouse = () => {
-  const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [warehouses, setWarehouses] = React.useState([]);
-
-  const form = useForm();
-
-  const { handleSubmit, setValue, reset } = form;
+  const handleWarehouse = () => {
+    setOpenDialog(true);
+  };
 
   const fetchWarehouses = async () => {
+    const warehouses = await warehouseUsecase.getWarehouses();
+    setWarehouses(warehouses);
+  };
+
+  const handleStatusWarehouse = async (id) => {
     try {
-      const warehouses = await warehouseUsecase.getWarehouses();
-      setWarehouses(warehouses);
+      const confirmed = await confirm({
+        title: "Alterar status?",
+        message: "Tem certeza que deseja alterar o status do armazém?",
+      });
+
+      if (!confirmed) return;
+
+      let response = await warehouseUsecase.disableWarehouse(id);
+      if (response == null) {
+        showAlert("Não foi possivel alterar o status do armazém", "error");
+      } else {
+        showAlert("Alterado status com sucesso");
+      }
+
+      fetchWarehouses();
     } catch (error) {
-      console.error(error);
-      setWarehouses([]);
+      showAlert("Não foi possivel alterar o status do armazém", "error");
     }
   };
 
-  React.useEffect(() => {
+  const closeDialog = async () => {
+    setOpenDialog(false);
+    fetchWarehouses();
+  };
+
+  useEffect(() => {
     fetchWarehouses();
   }, []);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleResetInputs = () => {
-    reset();
-  };
-  const handleNavigate = (id) => {
-    navigate(`/warehouse/${id}`);
-  };
-
-  const saveWarehouse = (data) => {
-    console.log('Passei aqui')
-    warehouseUsecase.saveWarehouse(
-      new WarehouseEntity(null, data.nameField, null)
-    ).then((response) => {
-      try {
-        fetchWarehouses();
-        handleResetInputs();
-        handleClose();
-      } catch (error) {
-        console.log(response);
-        console.log(error);
-      }
-    });
-  };
-
-  const disableWarehouse = (id) => {
-    let result = confirm('Você realmente desaja desabilitar o armazém?')
-    if (result){
-      warehouseUsecase.disableWarehouse(
-        id
-      ).then((response) => {
-        try {
-          fetchWarehouses();
-        } catch (error) {
-          console.log(response);
-          console.log(error);
-        }
-      });
-    }
-  }
-
   return (
     <MainLayout>
-      <Box
-        sx={{
-          display: "flex",
-          p: 2,
-          flexDirection: "column",
-          gap: 4,
-          width: "100%",
-          maxWidth: "1000px",
-          margin: "0 auto",
-        }}
-      >
-        <Box sx={{display: "flex", gap: 2}}>
-          <Button
-            variant="contained"
-            sx={{
-              alignSelf: "flex-end",
-              mb: 2,
-            }}
-            onClick={handleClickOpen}
-          >
-            Novo armazém
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          <Typography variant="h4">Armazéns</Typography>
+          <Button variant="contained" onClick={() => handleWarehouse()}>
+            Novo Armazém
           </Button>
         </Box>
-        <WarehouseDialog
-          open={open}
-          onClose={handleClose}
-          form={form}
-          save={handleSubmit(saveWarehouse)}
-        />
-        <Grid2 container spacing={2}>
-          {warehouses.length > 0 ? (
-            warehouses.map((warehouse, index) => (
-              <Grid2 key={index} xs={12} sm={6}>
-                <WarehouseCard warehouse={warehouse} onClose={() => disableWarehouse(warehouse.id)} onClick={() => handleNavigate(warehouse.id)} />
-              </Grid2>
-            ))
-          ) : (
-            <></>
-          )}
-        </Grid2>
-      </Box>
+        <TableContainer
+          component={Paper}
+          sx={{
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+            overflowY: "auto",
+            maxHeight: "60vh",
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Nome</TableCell>
+                <TableCell>Situação</TableCell>
+                <TableCell>Quantidade de itens</TableCell>
+                <TableCell>Ações</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {warehouses.map((warehouse) => (
+                <TableRow key={warehouse.id}>
+                  <TableCell>{warehouse.name}</TableCell>
+                  <TableCell>
+                    {warehouse.disable ? "Desativado" : "Ativo"}
+                  </TableCell>
+                  <TableCell>{warehouse.itemCount}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-label="delete"
+                      color={warehouse.disable ? "success" : "error"}
+                      disabled={warehouse.itemCount > 0}
+                      title={warehouse.disable ? "Ativar" : "Desativar"}
+                      onClick={() => handleStatusWarehouse(warehouse.id)}
+                    >
+                      {warehouse.disable ? <SyncIcon /> : <SyncDisabledIcon />}
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <WarehouseDialog open={openDialog} onClose={closeDialog} />
+        </TableContainer>
+      </Container>
     </MainLayout>
   );
 };
+
+export default Warehouse;

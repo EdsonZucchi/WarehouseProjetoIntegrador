@@ -1,19 +1,14 @@
 package io.github.edsonzuchi.gfig.core.service.impl;
 
 import io.github.edsonzuchi.gfig.core.exception.StockException;
+import io.github.edsonzuchi.gfig.core.model.dto.request.StockRegisterRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.StockRelease;
 import io.github.edsonzuchi.gfig.core.model.dto.request.StockRequest;
-import io.github.edsonzuchi.gfig.core.model.entity.Stock;
-import io.github.edsonzuchi.gfig.core.model.entity.StockId;
-import io.github.edsonzuchi.gfig.core.model.entity.Variant;
-import io.github.edsonzuchi.gfig.core.model.entity.Warehouse;
+import io.github.edsonzuchi.gfig.core.model.entity.*;
 import io.github.edsonzuchi.gfig.core.model.enums.TypeMovement;
 import io.github.edsonzuchi.gfig.core.service.StockService;
 import io.github.edsonzuchi.gfig.core.service.UtilsService;
-import io.github.edsonzuchi.gfig.infra.repository.ProductRepository;
-import io.github.edsonzuchi.gfig.infra.repository.StockRepository;
-import io.github.edsonzuchi.gfig.infra.repository.VariantRepository;
-import io.github.edsonzuchi.gfig.infra.repository.WarehouseRepository;
+import io.github.edsonzuchi.gfig.infra.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,11 +23,12 @@ public class StockServiceImpl implements StockService {
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
     private final VariantRepository variantRepository;
+    private final StockMovementRepository stockMovementRepository;
     private final UtilsService utilsService;
 
     @Override
     @Transactional
-    public Stock StockRegister(StockRelease stockRelease) throws StockException {
+    public Stock StockRegister(StockRelease stockRelease, User user) throws StockException {
         StockId stockId = new StockId();
 
         if (stockRelease.idWarehouse() == null) {
@@ -81,20 +77,29 @@ public class StockServiceImpl implements StockService {
             throw StockException.QUANTITY_LESS_THAN_ZERO;
         }
 
+        this.RegisterLog(new StockRegisterRequest(
+                warehouse,
+                product,
+                variant,
+                stockRelease.type(),
+                stockRelease.quantity(),
+                user
+        ));
+
         return stockRepository.save(stock);
     }
 
     @Override
     @Transactional
-    public void StockListRegister(List<StockRelease> list) throws StockException {
+    public void StockListRegister(List<StockRelease> list, User user) throws StockException {
         for (StockRelease stockRelease : list) {
-            this.StockRegister(stockRelease);
+            this.StockRegister(stockRelease, user);
         }
     }
 
     @Override
     @Transactional
-    public Stock Inventory(StockRequest request) throws StockException {
+    public Stock Inventory(StockRequest request, User user) throws StockException {
         Variant variant = variantRepository.findById(request.idVariant()).orElse(null);
         if (variant == null) {
             throw StockException.VARIANT_NOT_FOUND;
@@ -111,6 +116,18 @@ public class StockServiceImpl implements StockService {
                 request.idVariant(),
                 request.quantity(),
                 TypeMovement.INVENTORY
-        ));
+        ), user);
+    }
+
+    private void RegisterLog(StockRegisterRequest stock) {
+        StockMovement stockMovement = new StockMovement();
+        stockMovement.setWarehouse(stock.warehouse());
+        stockMovement.setProduct(stock.product());
+        stockMovement.setVariant(stock.variant());
+        stockMovement.setQuantity(stock.quantity());
+        stockMovement.setTypeMovement(stock.typeMovement());
+        stockMovement.setUser(stock.user());
+
+        stockMovementRepository.save(stockMovement);
     }
 }

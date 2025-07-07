@@ -120,6 +120,7 @@ class ProductRepository {
                         dto.stockQuantity,
                         dto.selectQuantity,
                         dto.returnQuantity,
+                        dto.pedingQuantity,
                         dto.product.um.acronym.toLowerCase(),
                     )
             );

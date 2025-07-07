@@ -9,6 +9,7 @@ import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.model.enums.UserRole;
 import io.github.edsonzuchi.gfig.core.service.UserService;
+import io.github.edsonzuchi.gfig.core.service.UtilsService;
 import io.github.edsonzuchi.gfig.infra.repository.UserRepository;
 import io.github.edsonzuchi.gfig.infra.security.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -27,35 +28,85 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UtilsService utilsService;
     private final TokenService tokenService;
+    private final String DEFAULT_PASSWORD = "123456";
 
     @Override
     public UserResponse createUser(UserRequest userRequest, User userCreated) throws Exception {
-        Optional<User> user = userRepository.findByEmail(userRequest.email());
-        if (user.isPresent()) {
-            throw UserException.USER_EXISTS;
-        }
-
         UserRole role = UserRole.getRoleOfKey(userRequest.role());
         if (role == null) {
             throw UserException.ROLE_NOT_FOUND;
         }
 
-        User newUser = new User();
-        newUser.setEmail(userRequest.email());
-        newUser.setPassword(passwordEncoder.encode(userRequest.password()));
-        newUser.setBirthday(userRequest.birthday());
-        newUser.setName(userRequest.name());
-        newUser.setRole(role);
-        newUser.setCreatedUser(userCreated);
-        this.userRepository.save(newUser);
+        User savedUser;
+        if (userRequest.id() != null) {
+            var optional = userRepository.findById(userRequest.id());
+            if (optional.isEmpty()) {
+                throw UserException.USER_NOT_FOUND;
+            }
+            savedUser = optional.get();
+        } else {
+            Optional<User> user = userRepository.findByEmail(userRequest.email());
+            if (user.isPresent()) {
+                throw UserException.USER_EXISTS;
+            }
+
+            savedUser = new User();
+            savedUser.setEmail(userRequest.email());
+            savedUser.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+            savedUser.setCreatedUser(userCreated);
+        }
+
+        savedUser.setBirthday(userRequest.birthday());
+        savedUser.setName(userRequest.name());
+        savedUser.setRole(role);
+        savedUser = this.userRepository.save(savedUser);
 
         return new UserResponse(
-                newUser.getEmail(),
-                newUser.getName(),
-                newUser.getBirthday(),
-                newUser.getRole().getKey()
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getName(),
+                savedUser.getBirthday(),
+                savedUser.getRole().getKey(),
+                savedUser.getStatusCode().getCode()
         );
+    }
+
+    @Override
+    public UserResponse getUser(Long id) throws Exception {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw UserException.USER_NOT_FOUND;
+        }
+
+        return utilsService.userResponse(id);
+    }
+
+    @Override
+    public void resetPassword(Long id) throws Exception {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw UserException.USER_NOT_FOUND;
+        }
+
+        user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+        this.userRepository.save(user);
+    }
+
+    @Override
+    public void changePassword(Long id, String oldPassword, String newPassword) throws Exception {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw UserException.USER_NOT_FOUND;
+        }
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw UserException.WRONG_PASSWORD;
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        this.userRepository.save(user);
     }
 
     @Override
@@ -84,10 +135,12 @@ public class UserServiceImpl implements UserService {
 
         for (User user : users) {
             UserResponse response = new UserResponse(
+                    user.getId(),
                     user.getEmail(),
                     user.getName(),
                     user.getBirthday(),
-                    user.getRole().getKey()
+                    user.getRole().getLabel(),
+                    user.getStatusCode().getCode()
             );
             userResponses.add(response);
         }
@@ -130,5 +183,23 @@ public class UserServiceImpl implements UserService {
         }
 
         return response;
+    }
+
+    @Override
+    public UserResponse updateStatusUser(Long id) throws Exception {
+        User user = this.userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw UserException.USER_NOT_FOUND;
+        }
+
+        if (user.getStatusCode() == StatusCode.INACTIVE) {
+            user.setStatusCode(StatusCode.ACTIVE);
+        } else {
+            user.setStatusCode(StatusCode.INACTIVE);
+        }
+
+        this.userRepository.save(user);
+
+        return utilsService.userResponse(id);
     }
 }

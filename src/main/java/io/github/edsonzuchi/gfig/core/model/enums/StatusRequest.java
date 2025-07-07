@@ -8,7 +8,9 @@ public enum StatusRequest {
     TYPING(0, "Typing", "Em digitação", false),
     REQUESTED(1, "Requested", "Requisitado", true),
     ACCEPTED(2, "Accepted", "Aceito", false),
-    RETURNED(3, "Returned", "Devolvido", false);
+    RETURNED_PARTIAL(5, "Returned Partial", "Devolvido parcial", false),
+    RETURNED(3, "Returned", "Devolvido", false),
+    REJECTED(4, "Rejected", "Rejeitado", false);
 
     private Integer code;
     private String description;

@@ -96,7 +96,8 @@ public class ProductController {
     @PostMapping("/inventory")
     public ResponseEntity<Object> inventory(@RequestBody StockRequest request) {
         try {
-            return ResponseEntity.ok(stockService.Inventory(request));
+            User user = SecurityUtil.getUser();
+            return ResponseEntity.ok(stockService.Inventory(request, user));
         } catch (StockException pe) {
             return ResponseEntity.unprocessableEntity().body(pe.getMessage());
         } catch (Exception e) {

@@ -3,30 +3,41 @@ import { PasswordField } from "../../../shared/components/PasswordField";
 import { useForm } from "react-hook-form";
 import { userUseCase } from "../usecase/UserUseCase";
 import { EmailField } from "../../../shared/components/EmailField";
-import { setToken } from "../../../shared/utils/utils";
+import { setToken, setUser } from "../../../shared/utils/utils";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useAlert } from "../../components/AlertProvider";
 
 export const Login = () => {
   const form = useForm();
+  const { showAlert } = useAlert();
 
   const { handleSubmit, setValue } = form;
 
   const navigate = useNavigate();
 
-  const login = (data) => {
-    userUseCase.login(data?.email, data?.password).then((response) => {
-      try {
-        if (response === "") {
-          console.log(response);
-        } else {
-          setToken(response);
-          navigate("/users");
+  const login = async (data) => {
+    try {
+      let response = await userUseCase.login(data?.email, data?.password)
+      setToken(response);
+
+      userUseCase.getMe().then((user) => {
+        try {
+          if (user == null) {
+            showAlert("Erro ao buscar o usuário");
+            return;
+          }
+
+          setUser(user);
+
+          navigate("/home");
+        } catch (error) {
+          showAlert(error.message || "Erro ao buscar usuário", "error");
         }
-      } catch (error) {
-        console.log(response);
-      }
-    });
+      });
+    } catch (error) {
+      showAlert(error.message || "Erro ao logar", "error");
+    }
   };
 
   // Estilos globais para remover o scroll e ajustar o layout.
@@ -43,7 +54,8 @@ export const Login = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: "url('https://img.freepik.com/free-vector/warehouse-interior-with-cardboard-boxes_107791-3324.jpg?semt=ais_hybrid')",
+        backgroundImage:
+          "url('https://img.freepik.com/free-vector/warehouse-interior-with-cardboard-boxes_107791-3324.jpg?semt=ais_hybrid')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

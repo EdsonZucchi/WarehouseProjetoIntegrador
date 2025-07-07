@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { MainLayout } from "../../components/MainLayout";
 import ProductCard from "../components/ProductCard";
+import { getUser } from "../../../shared/utils/utils";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -23,6 +24,8 @@ const ProductPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [filter, setFilter] = useState("");
+
+  const user = getUser();
 
   const fetchProducts = async () => {
     try {
@@ -65,9 +68,15 @@ const ProductPage = () => {
           mb={2}
         >
           <Typography variant="h4">Produtos</Typography>
-          <Button variant="contained" onClick={() => handleProduct(null)}>
-            Novo Produto
-          </Button>
+          {user.role !== "REQUESTER" ? (
+            <>
+              <Button variant="contained" onClick={() => handleProduct(null)}>
+                Novo Produto
+              </Button>
+            </>
+          ) : (
+            <></>
+          )}
         </Box>
         <TextField
           label="Filtro"

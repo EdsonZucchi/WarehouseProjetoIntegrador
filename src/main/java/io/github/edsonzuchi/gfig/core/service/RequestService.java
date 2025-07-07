@@ -15,8 +15,11 @@ public interface RequestService {
     RequestResponse saveRequest(RequestRequest request, User user);
     RequestItemResponse saveRequestItem(RequestItemRequest request, User user);
     RequestItemResponse saveRequestItemDevolution(RequestItemRequest request, User user);
-    RequestResponse returnRequest(Long idRequest);
-    RequestResponse finishTypingRequest(Long idRequest);
+    RequestResponse returnRequest(Long idRequest, User user);
+    RequestResponse returnPartialRequest(Long idRequest, User user);
+    RequestResponse finishTypingRequest(Long idRequest, User user);
+    RequestResponse acceptRequest(Long idRequest, User user);
+    RequestResponse rejectRequest(Long idRequest, User user);
     List<RequestResponse> getRequests(User user);
     RequestListResponse getRequestList(Long idRequest);
     List<ProductVariantStockResponse> getItems(Long idRequest, String filter);

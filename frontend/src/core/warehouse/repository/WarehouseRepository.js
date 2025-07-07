@@ -9,7 +9,7 @@ class WarehouseRepository {
         const data = response.data;
         return data.map(
           (warehouse) =>
-            new Warehouse(warehouse.id, warehouse.name, warehouse.disabled, null)
+            new Warehouse(warehouse.id, warehouse.name, warehouse.disabled, null, warehouse.itemCount)
         );
       } else {
         return [];
@@ -20,11 +20,10 @@ class WarehouseRepository {
     }
   }
 
-  async saveWarehouse(warehouse) {
+  async saveWarehouse(name) {
     try {
       const response = await httpHelper.post("/warehouse/save", {
-        id: warehouse.id,
-        name: warehouse.name,
+        name: name,
       });
       if (response.status == 200) {
         return response.data;
@@ -46,7 +45,6 @@ class WarehouseRepository {
         return null;
       }
     } catch (error) {
-      console.error(error);
       return null;
     }
   }
@@ -61,7 +59,7 @@ class WarehouseRepository {
           (product) => new Product(product.id, product.name, product.quantity, product.idWarehouse)
         );
 
-        const warehouse = new Warehouse(data.id, data.name, data.disabled, list);
+        const warehouse = new Warehouse(data.id, data.name, data.disabled, list, data.itemCount);
 
         return warehouse;
       } else {

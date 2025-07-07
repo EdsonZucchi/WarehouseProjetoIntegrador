@@ -5,9 +5,8 @@ class WarehouseUseCase {
         return warehouseRepository.getWarehouses();
     }
 
-    async saveWarehouse(warehouse){
-        console.log(warehouse);
-        return warehouseRepository.saveWarehouse(warehouse);
+    async saveWarehouse(name){
+        return warehouseRepository.saveWarehouse(name);
     }
 
     async disableWarehouse(id) {

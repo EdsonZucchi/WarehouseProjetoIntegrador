@@ -3,11 +3,13 @@ package io.github.edsonzuchi.gfig.core.service.impl;
 import io.github.edsonzuchi.gfig.core.exception.WarehouseException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.WarehouseRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.response.WarehouseResponse;
+import io.github.edsonzuchi.gfig.core.model.entity.Stock;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
 import io.github.edsonzuchi.gfig.core.model.entity.Warehouse;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
 import io.github.edsonzuchi.gfig.core.service.UtilsService;
 import io.github.edsonzuchi.gfig.core.service.WarehouseService;
+import io.github.edsonzuchi.gfig.infra.repository.StockRepository;
 import io.github.edsonzuchi.gfig.infra.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final UtilsService utilsService;
+    private final StockRepository stockRepository;
 
     @Override
     public Warehouse saveWarehouse(WarehouseRequest dto, User user) {
@@ -75,10 +78,17 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .toList();
 
         for (Warehouse warehouse : list) {
+            Double quantityStock = 0.0;
+            var stocks = stockRepository.findByWarehouseId(warehouse.getId());
+            for (Stock stock : stocks) {
+                quantityStock += stock.getQuantity();
+            }
+
             responses.add(new WarehouseResponse(
                             warehouse.getId(),
                             warehouse.getName(),
-                            (warehouse.getStatusCode() == StatusCode.INACTIVE))
+                            (warehouse.getStatusCode() == StatusCode.INACTIVE),
+                            quantityStock)
             );
         }
 
@@ -92,9 +102,17 @@ public class WarehouseServiceImpl implements WarehouseService {
             throw WarehouseException.WAREHOUSE_NOT_FOUND;
         }
 
+        Double quantityStock = 0.0;
+        var stocks = stockRepository.findByWarehouseId(warehouse.getId());
+        for (Stock stock : stocks) {
+            quantityStock += stock.getQuantity();
+        }
+
         return new WarehouseResponse(
                 warehouse.getId(),
                 warehouse.getName(),
-                (warehouse.getStatusCode() == StatusCode.INACTIVE));
+                (warehouse.getStatusCode() == StatusCode.INACTIVE),
+                quantityStock
+        );
     }
 }

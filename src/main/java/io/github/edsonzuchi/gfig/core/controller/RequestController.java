@@ -1,5 +1,6 @@
 package io.github.edsonzuchi.gfig.core.controller;
 
+import io.github.edsonzuchi.gfig.core.exception.ProductException;
 import io.github.edsonzuchi.gfig.core.exception.RequestException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestItemRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.RequestRequest;
@@ -44,7 +45,9 @@ public class RequestController {
         try {
             User user = SecurityUtil.getUser();
             return ResponseEntity.ok(requestService.saveRequestItemDevolution(request, user));
-        }catch (Exception e) {
+        }catch (RequestException | ProductException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
@@ -53,7 +56,8 @@ public class RequestController {
     @PostMapping("/finish/typing/{id}")
     public ResponseEntity<Object> finishTyping(@PathVariable("id") Long id) {
         try {
-            return ResponseEntity.ok(requestService.finishTypingRequest(id));
+            User user = SecurityUtil.getUser();
+            return ResponseEntity.ok(requestService.finishTypingRequest(id, user));
         }catch (RequestException re) {
             return ResponseEntity.unprocessableEntity().body(re.getMessage());
         }catch (Exception e) {
@@ -65,7 +69,21 @@ public class RequestController {
     @PostMapping("/return/{id}")
     public ResponseEntity<Object> returnRequest(@PathVariable("id") Long id) {
         try {
-            return ResponseEntity.ok(requestService.returnRequest(id));
+            User user = SecurityUtil.getUser();
+            return ResponseEntity.ok(requestService.returnRequest(id, user));
+        }catch (RequestException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/return/partial/{id}")
+    public ResponseEntity<Object> returnPartialRequest(@PathVariable("id") Long id) {
+        try {
+            User user = SecurityUtil.getUser();
+            return ResponseEntity.ok(requestService.returnPartialRequest(id, user));
         }catch (RequestException re) {
             return ResponseEntity.unprocessableEntity().body(re.getMessage());
         }catch (Exception e) {
@@ -109,6 +127,34 @@ public class RequestController {
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         try {
             requestService.cancelRequest(id);
+            return ResponseEntity.ok(true);
+        }catch (RequestException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/{id}/accepted")
+    public ResponseEntity<Object> accepted(@PathVariable("id") Long id) {
+        try {
+            User user = SecurityUtil.getUser();
+            requestService.acceptRequest(id, user);
+            return ResponseEntity.ok(true);
+        }catch (RequestException re) {
+            return ResponseEntity.unprocessableEntity().body(re.getMessage());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/{id}/rejected")
+    public ResponseEntity<Object> rejected(@PathVariable("id") Long id) {
+        try {
+            User user = SecurityUtil.getUser();
+            requestService.rejectRequest(id, user);
             return ResponseEntity.ok(true);
         }catch (RequestException re) {
             return ResponseEntity.unprocessableEntity().body(re.getMessage());

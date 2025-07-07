@@ -1,5 +1,8 @@
 package io.github.edsonzuchi.gfig.core.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TypeMovement {
     REQUEST(1, TypeOperation.REDUCE),
     DEVOLUTION(2, TypeOperation.SUM),
@@ -7,19 +10,12 @@ public enum TypeMovement {
     ADDITION(4, TypeOperation.SUM),
     REMOVE(5, TypeOperation.REDUCE);
     
-    private Integer code;
-    private TypeOperation operation;
+    private final Integer code;
+    private final TypeOperation operation;
 
     TypeMovement(Integer code, TypeOperation operation) {
         this.code = code;
         this.operation = operation;
     }
 
-    public Integer getCode() {
-        return code;
-    }
-
-    public TypeOperation getOperation() {
-        return operation;
-    }
 }

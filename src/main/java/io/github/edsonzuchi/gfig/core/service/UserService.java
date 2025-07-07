@@ -13,6 +13,10 @@ import java.util.List;
 public interface UserService {
 
     UserResponse createUser(UserRequest userRequest, User user) throws Exception;
+    UserResponse getUser(Long id) throws Exception;
+    void resetPassword(Long id) throws Exception;
+    void changePassword(Long id, String oldPassword, String newPassword) throws Exception;
+    UserResponse updateStatusUser(Long id) throws Exception;
     String loginUser(LoginRequest loginRequest) throws Exception;
     List<UserResponse> getUsers() throws Exception;
     String createAdmin() throws Exception;

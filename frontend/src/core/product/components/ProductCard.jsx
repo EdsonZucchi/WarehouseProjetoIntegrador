@@ -20,9 +20,11 @@ import { useState } from "react";
 import { useAlert } from "../../components/AlertProvider";
 import { productUsecase } from "../usecase/ProductUseCase";
 import { useEffect } from "react";
+import { getUser } from "../../../shared/utils/utils";
 
 export default function ProductCard({ open, onClose, units, idProduct }) {
   const { showAlert } = useAlert();
+  const user = getUser();
 
   const [displayName, setDisplayName] = useState("");
 
@@ -120,13 +122,19 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         Produto
-        <Button
-          onClick={handleAddProduct}
-          variant="contained"
-          sx={{ float: "right" }}
-        >
-          {displayName}
-        </Button>
+        {user.role !== "REQUESTER" ? (
+          <>
+            <Button
+              onClick={handleAddProduct}
+              variant="contained"
+              sx={{ float: "right" }}
+            >
+              {displayName}
+            </Button>
+          </>
+        ) : (
+          <></>
+        )}
       </DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={2}>

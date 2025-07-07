@@ -10,22 +10,41 @@ import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import LogoutIcon from "@mui/icons-material/Logout";
-import ArticleIcon from '@mui/icons-material/Article';
+import ArticleIcon from "@mui/icons-material/Article";
 import CategoryIcon from "@mui/icons-material/Category";
 import { useNavigate } from "react-router-dom";
-import InventoryIcon from '@mui/icons-material/Inventory';
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { getUser, removeToken, removeUser } from "../../shared/utils/utils";
+import { useState } from "react";
+import ResetPassword from "../user/components/ResetPassword";
 
 export const SidebarMenu = () => {
   const navigate = useNavigate();
 
+  const user = getUser();
+
+  const [open, setOpenDialog] = useState(false);
+
+  const closeDialog = async () => {
+    setOpenDialog(false)
+  }
+
   const menuItems = [
     { text: "Início", icon: <HomeIcon />, path: "/home" },
     { text: "Requisições", icon: <ArticleIcon />, path: "/request" },
-    { text: "Armazéns", icon: <WarehouseIcon />, path: "/warehouse" },
     { text: "Produtos", icon: <CategoryIcon />, path: "/product" },
-    { text: "Inventário", icon: <InventoryIcon />, path: "/inventory" },
-    { text: "Usuários", icon: <PersonIcon />, path: "/users" },
   ];
+
+  if (user.role === "ADMIN" || user.role === "MANAGER") {
+    menuItems.push(
+      { text: "Inventário", icon: <InventoryIcon />, path: "/inventory" },
+      { text: "Armazéns", icon: <WarehouseIcon />, path: "/warehouse" },
+    );
+  }
+
+  if (user.role === "ADMIN") {
+    menuItems.push({ text: "Usuários", icon: <PersonIcon />, path: "/users" });
+  }
 
   return (
     <>
@@ -63,7 +82,25 @@ export const SidebarMenu = () => {
           <List>
             <ListItem
               onClick={() => {
+                setOpenDialog(true)
+              }}
+              sx={{
+                borderRadius: "8px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: "#c20000" }}>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Alterar senha" sx={{color:"#c20000"}} />
+            </ListItem>
+            <ListItem
+              onClick={() => {
                 navigate("/login");
+                removeToken();
+                removeUser();
               }}
               sx={{
                 borderRadius: "8px",
@@ -78,6 +115,10 @@ export const SidebarMenu = () => {
               <ListItemText primary="Logout" sx={{ color: "#333" }} />
             </ListItem>
           </List>
+          <ResetPassword
+            open={open}
+            onClose={closeDialog}
+          />
         </Box>
       </Box>
     </>

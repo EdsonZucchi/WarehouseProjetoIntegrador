@@ -60,7 +60,8 @@ public class UtilsServiceImpl implements UtilsService {
         return new WarehouseResponse(
                 warehouse.getId(),
                 warehouse.getName(),
-                warehouse.getStatusCode() == StatusCode.ACTIVE
+                warehouse.getStatusCode() == StatusCode.ACTIVE,
+                 null
         );
     }
 
@@ -73,10 +74,12 @@ public class UtilsServiceImpl implements UtilsService {
         var user = optional.get();
 
         return new UserResponse(
+                user.getId(),
                 user.getEmail(),
                 user.getName(),
                 user.getBirthday(),
-                user.getRole().getLabel()
+                user.getRole().getKey(),
+                user.getStatusCode().getCode()
         );
     }
 

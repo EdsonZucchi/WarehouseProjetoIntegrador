@@ -1,6 +1,7 @@
 package io.github.edsonzuchi.gfig.core.controller;
 
 import io.github.edsonzuchi.gfig.core.exception.UserException;
+import io.github.edsonzuchi.gfig.core.model.dto.request.ChangePasswordRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.LoginRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.UserRequest;
 import io.github.edsonzuchi.gfig.core.model.entity.User;
@@ -28,6 +29,52 @@ public class UserController {
         }catch (UserException ue){
             return ResponseEntity.unprocessableEntity().body(ue.getMessage());
         }catch (Exception e){
+            return ResponseEntity.internalServerError().body("Error processing request");
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUser(id));
+        }catch (UserException ue){
+            return ResponseEntity.unprocessableEntity().body(ue.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body("Error processing request");
+        }
+    }
+
+    @PutMapping("/auth/status/{id}")
+    public ResponseEntity<Object> updateStatus(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(userService.updateStatusUser(id));
+        } catch (UserException ue) {
+            return ResponseEntity.unprocessableEntity().body(ue.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error processing request");
+        }
+    }
+
+    @PostMapping("/auth/password/reset/{id}")
+    public ResponseEntity<Object> resetPassword(@PathVariable("id") Long id) {
+        try {
+            userService.resetPassword(id);
+            return ResponseEntity.ok("Password reset successful");
+        } catch (UserException ue) {
+            return ResponseEntity.unprocessableEntity().body(ue.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error processing request");
+        }
+    }
+
+    @PostMapping("/auth/password/change/{id}")
+    public ResponseEntity<Object> changePassword(@PathVariable("id") Long id, @RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            userService.changePassword(id, changePasswordRequest.oldPassword(), changePasswordRequest.newPassword());
+            return ResponseEntity.ok("Password change successful");
+        } catch (UserException ue) {
+            return ResponseEntity.unprocessableEntity().body(ue.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error processing request");
         }
     }
