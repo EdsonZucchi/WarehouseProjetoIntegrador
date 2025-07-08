@@ -27,6 +27,10 @@ class ProductUseCase {
     return productRepository.getProductById(idProduct);
   }
 
+  async getCritical() {
+    return productRepository.getCritical();
+  }
+
   async listItems(idWarehouse, filter) {
     return productRepository.listItems(idWarehouse, filter);
   }
@@ -39,6 +43,10 @@ class ProductUseCase {
     }
 
     return productRepository.inventory(request);
+  }
+
+  async getMovements(filter, warehouse, user) {
+    return productRepository.getMovements(filter, warehouse, user);
   }
 }
 

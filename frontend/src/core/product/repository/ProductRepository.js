@@ -2,13 +2,15 @@ import { httpHelper } from "../../../shared/api/httpHelper";
 import { Product } from "../model/Product";
 import { Unit } from "../model/Unit";
 import { VariantItem } from "../../request/model/VariantItem"
+import { Movement } from "../model/Movement";
+import { Critical } from "../model/Critical";
 
 class ProductRepository {
     async getAllProducts(filter) {
         try {
             const response = await httpHelper.get("/product", {
                 params: {
-                    "filter" : filter
+                    "filter": filter
                 }
             })
 
@@ -120,7 +122,7 @@ class ProductRepository {
                         dto.stockQuantity,
                         dto.selectQuantity,
                         dto.returnQuantity,
-                        dto.pedingQuantity,
+                        dto.pendingQuantity,
                         dto.product.um.acronym.toLowerCase(),
                     )
             );
@@ -142,6 +144,73 @@ class ProductRepository {
                 err.isCase = true
                 throw err
             }
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async getMovements(filter, warehouse, user) {
+        try {
+            const response = await httpHelper.get("/stock/movements", {
+                params: {
+                    filter: filter,
+                    warehouse: warehouse,
+                    user: user
+                }
+            })
+
+            if (response.status != 200) {
+                const err = new Error("Erro ao buscar a informação")
+                err.isCase = true
+                throw err
+            }
+
+            const data = response.data;
+            return data.map(
+                (dto) =>
+                    new Movement(
+                        dto.id, 
+                        dto.warehouse.name, 
+                        dto.product.name, 
+                        (''+dto.variant.code+' - '+dto.variant.name), 
+                        dto.quantity, 
+                        dto.typeMovement, 
+                        dto.user.name, 
+                        dto.time
+                    )
+            );
+        } catch (error) {
+            if (error.isCase) {
+                throw error
+            } else {
+                throw Error("Ocorreu um erro na requisição")
+            }
+        }
+    }
+
+    async getCritical() {
+        try {
+            const response = await httpHelper.get("/product/critical")
+
+            if (response.status != 200) {
+                const err = new Error("Erro ao buscar a informação")
+                err.isCase = true
+                throw err
+            }
+
+            const data = response.data;
+            return data.map(
+                (dto) =>
+                    new Critical(
+                        dto.name,
+                        dto.quantity,
+                        dto.um
+                    )
+            );
         } catch (error) {
             if (error.isCase) {
                 throw error

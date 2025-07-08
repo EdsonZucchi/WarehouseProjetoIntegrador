@@ -4,12 +4,10 @@ import io.github.edsonzuchi.gfig.core.exception.ProductException;
 import io.github.edsonzuchi.gfig.core.exception.WarehouseException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.ProductRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.VariantRequest;
-import io.github.edsonzuchi.gfig.core.model.dto.response.ProductResponse;
-import io.github.edsonzuchi.gfig.core.model.dto.response.ProductVariantStockResponse;
-import io.github.edsonzuchi.gfig.core.model.dto.response.UMResponse;
-import io.github.edsonzuchi.gfig.core.model.dto.response.VariantResponse;
+import io.github.edsonzuchi.gfig.core.model.dto.response.*;
 import io.github.edsonzuchi.gfig.core.model.entity.*;
 import io.github.edsonzuchi.gfig.core.model.enums.StatusCode;
+import io.github.edsonzuchi.gfig.core.model.enums.StatusRequest;
 import io.github.edsonzuchi.gfig.core.service.ProductService;
 import io.github.edsonzuchi.gfig.infra.repository.*;
 import jakarta.transaction.Transactional;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,6 +28,8 @@ public class ProductServiceImpl implements ProductService {
     private final UtilsServiceImpl utilsServiceImpl;
     private final StockRepository stockRepository;
     private final WarehouseRepository warehouseRepository;
+    private final RequestRepository requestRepository;
+    private final RequestItemRepository requestItemRepository;
 
     @Override
     public Product saveProduct(ProductRequest request, User user) throws ProductException {
@@ -224,6 +225,23 @@ public class ProductServiceImpl implements ProductService {
             throw WarehouseException.WAREHOUSE_NOT_FOUND;
         }
 
+        HashMap<Long, Double> variantRequest = new HashMap<>();
+        var listRequests = requestRepository.findAllByWarehouseRequested(warehouse);
+        for (Request item : listRequests) {
+            if (item.getStatusRequest() == StatusRequest.TYPING ||
+                item.getStatusRequest() == StatusRequest.RETURNED ||
+                item.getStatusRequest() == StatusRequest.REJECTED
+            ) {
+                continue;
+            }
+            var items = requestItemRepository.findByRequestId(item.getId());
+            for (RequestItem itemRequest : items) {
+                var quantity = itemRequest.getQuantityRequested() - itemRequest.getQuantityReturned();
+                variantRequest.put(itemRequest.getVariant().getId(), quantity);
+            }
+        }
+
+
         var variants = variantRepository.findAll();
         for (Variant variant : variants) {
             var product = variant.getProduct();
@@ -236,6 +254,11 @@ public class ProductServiceImpl implements ProductService {
             var optionalStock = stockRepository.findById(new StockId(warehouse, product, variant));
             if (optionalStock.isPresent()) {
                 quantityStock = optionalStock.get().getQuantity();
+            }
+
+            Double quantityRequest = 0.0;
+            if (variantRequest.containsKey(variant.getId())) {
+                quantityRequest = variantRequest.get(variant.getId());
             }
 
             productVariantStockResponses.add(new ProductVariantStockResponse(
@@ -258,10 +281,43 @@ public class ProductServiceImpl implements ProductService {
                     quantityStock,
                     null,
                     null,
-                    null
+                    quantityRequest
             ));
         }
 
         return productVariantStockResponses;
+    }
+
+    @Override
+    public List<CriticalResponse> getCriticals() {
+        List<CriticalResponse> response = new ArrayList<>();
+
+        var products = productRepository.findAll();
+        for (Product product : products) {
+            if (!product.isActive()) {
+                continue;
+            }
+            if (!product.getLowStockWarning()) {
+                continue;
+            }
+
+            Double quantity = 0.0;
+            var stocks = stockRepository.findByProductId(product.getId());
+            for (Stock stock : stocks) {
+                quantity += stock.getQuantity();
+            }
+
+            if (product.getLowStockWarningQuantity() < quantity) {
+                continue;
+            }
+
+            response.add(new CriticalResponse(
+                    product.getName(),
+                    quantity,
+                    product.getUm().getAcronym()
+            ));
+        }
+
+        return response;
     }
 }

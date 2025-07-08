@@ -69,4 +69,22 @@ public class User {
         return List.of();
     }
 
+    public boolean containsFilter(String filter) {
+        if (filter == null || filter.isEmpty()) {
+            return true;
+        }
+
+        String filterLow = filter.toLowerCase();
+        String nameFilter = this.name.toLowerCase();
+
+        if (nameFilter.equals(filterLow) || nameFilter.contains(filterLow)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean notContainsFilter(String filter) {
+        return !containsFilter(filter);
+    }
 }

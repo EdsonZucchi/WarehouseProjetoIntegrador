@@ -104,6 +104,7 @@ export default function ProductCard({ open, onClose, units, idProduct }) {
         variants
       );
       showAlert("Adicionado com sucesso");
+      onClose();
       return true;
     } catch (error) {
       showAlert(error.message || "Erro ao adicionar", "error");

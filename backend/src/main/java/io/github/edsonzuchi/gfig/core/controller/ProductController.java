@@ -105,4 +105,14 @@ public class ProductController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/critical")
+    public ResponseEntity<Object> getCriticalProducts() {
+        try {
+            return ResponseEntity.ok(productService.getCriticals());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

@@ -16,12 +16,17 @@ import { useNavigate } from "react-router-dom";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import { getUser, removeToken, removeUser } from "../../shared/utils/utils";
 import { useState } from "react";
+import TimelineIcon from '@mui/icons-material/Timeline';
 import ResetPassword from "../user/components/ResetPassword";
+import { User } from "../user/model/User";
 
 export const SidebarMenu = () => {
   const navigate = useNavigate();
 
-  const user = getUser();
+  var user = getUser();
+  if (user == null) {
+    user = new User()
+  }
 
   const [open, setOpenDialog] = useState(false);
 
@@ -29,15 +34,23 @@ export const SidebarMenu = () => {
     setOpenDialog(false)
   }
 
-  const menuItems = [
-    { text: "Início", icon: <HomeIcon />, path: "/home" },
+  const menuItems = [];
+
+  if (user.role === "ADMIN" || user.role === "MANAGER") {
+    menuItems.push(
+      { text: "Início", icon: <HomeIcon />, path: "/home" },
+    )
+  }
+
+  menuItems.push(
     { text: "Requisições", icon: <ArticleIcon />, path: "/request" },
     { text: "Produtos", icon: <CategoryIcon />, path: "/product" },
-  ];
+  )
 
   if (user.role === "ADMIN" || user.role === "MANAGER") {
     menuItems.push(
       { text: "Inventário", icon: <InventoryIcon />, path: "/inventory" },
+      { text: "Movimentações", icon: <TimelineIcon />, path: "/movement" },
       { text: "Armazéns", icon: <WarehouseIcon />, path: "/warehouse" },
     );
   }

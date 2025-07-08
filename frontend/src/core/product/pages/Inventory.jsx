@@ -167,13 +167,18 @@ const Inventory = () => {
         </Box>
         <TableContainer
           component={Paper}
-          sx={{ boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}
+          sx={{
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+            overflowY: "auto",
+            maxHeight: "60vh",
+          }}
         >
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Produto</TableCell>
                 <TableCell>Variante</TableCell>
+                <TableCell>Requisitado</TableCell>
                 <TableCell>Estoque</TableCell>
                 <TableCell align="center">Ações</TableCell>
               </TableRow>
@@ -190,6 +195,8 @@ const Inventory = () => {
                   <TableCell>
                     {item.variantCode} - {item.variantName}
                   </TableCell>
+                  {console.log(item.quantityPending)}
+                  <TableCell>{item.quantityPending == 0 ? "-" : item.quantityPending}</TableCell>
                   <TableCell>
                     <TextField
                       variant="standard"

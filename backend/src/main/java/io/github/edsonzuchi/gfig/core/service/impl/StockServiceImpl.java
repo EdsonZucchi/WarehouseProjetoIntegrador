@@ -4,6 +4,7 @@ import io.github.edsonzuchi.gfig.core.exception.StockException;
 import io.github.edsonzuchi.gfig.core.model.dto.request.StockRegisterRequest;
 import io.github.edsonzuchi.gfig.core.model.dto.request.StockRelease;
 import io.github.edsonzuchi.gfig.core.model.dto.request.StockRequest;
+import io.github.edsonzuchi.gfig.core.model.dto.response.StockMovementResponse;
 import io.github.edsonzuchi.gfig.core.model.entity.*;
 import io.github.edsonzuchi.gfig.core.model.enums.TypeMovement;
 import io.github.edsonzuchi.gfig.core.service.StockService;
@@ -13,7 +14,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -129,5 +133,49 @@ public class StockServiceImpl implements StockService {
         stockMovement.setUser(stock.user());
 
         stockMovementRepository.save(stockMovement);
+    }
+
+    @Override
+    public List<StockMovementResponse> getMovements(String filter, Long warehouseId, String userName) throws StockException {
+        List<StockMovementResponse> responses = new ArrayList<>();
+
+        var list = stockMovementRepository.findAll();
+
+        list = list.stream().sorted(Comparator.comparing(StockMovement::getCreatedAt).reversed()).toList();
+
+        for (StockMovement movement : list) {
+            var product = movement.getProduct();
+            var variant = movement.getVariant();
+            var user = movement.getUser();
+            var warehouse = movement.getWarehouse();
+
+            if (product.notContainsFilter(filter) &&
+                    variant.notContainsFilter(filter)) {
+                continue;
+            }
+
+            if (user.notContainsFilter(userName)) {
+                continue;
+            }
+
+            if (warehouseId != 0) {
+                if (!Objects.equals(warehouse.getId(), warehouseId)) {
+                    continue;
+                }
+            }
+
+            responses.add(new StockMovementResponse(
+                    movement.getId(),
+                    utilsService.warehouseResponse(warehouse.getId()),
+                    utilsService.productResponse(product.getId()),
+                    utilsService.variantResponse(variant.getId()),
+                    movement.getQuantity(),
+                    movement.getTypeMovement().getDescription(),
+                    utilsService.userResponse(user.getId()),
+                    movement.getCreatedAt()
+            ));
+        }
+
+        return responses;
     }
 }

@@ -30,7 +30,12 @@ export const Login = () => {
 
           setUser(user);
 
-          navigate("/home");
+          if (user.role == "REQUESTER") {
+            navigate("/request");
+          } else {
+            navigate("/home");
+          }
+
         } catch (error) {
           showAlert(error.message || "Erro ao buscar usuário", "error");
         }
